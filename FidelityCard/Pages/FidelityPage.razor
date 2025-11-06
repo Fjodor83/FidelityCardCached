@@ -6,10 +6,10 @@
 @inject IJSRuntime JS
 
 
-<div class="bg-success text-white text-center py-3 mb-4">
+<div class="text-center py-3" style="height:fit-content;">
+    <img src="img\logo.avif" style="width:min(30%, 150px)" />
     <h1 class="fs-3 m-0">Registrazione utente</h1>
 </div>
-
 
 <EditForm Model="Fidelity" OnSubmit="HandleSubmit" class="p-3">
 <DataAnnotationsValidator />
@@ -36,7 +36,7 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="Email" class="form-label">Email</label>
-            <InputText id="Email" @bind-Value="Fidelity.Email" class="form-control" />
+            <InputText id="Email" readonly="readonly" @bind-Value="Fidelity.Email" class="form-control" />
             <ValidationMessage For="@(() => Fidelity.Email)" />
         </div>
         <div class="col-md-3">
@@ -97,7 +97,7 @@
 
     <!-- Pulante di submit -->
     <div class="text-center mt-4">
-        <button type="submit" class="btn btn-success px-5">
+        <button type="submit" class="btn btn-primary px-5">
             Salva
         </button>
     </div>
@@ -106,9 +106,19 @@
 
 
 @code {
+    [SupplyParameterFromQuery(Name = "email")] public string Email { get; set; } = string.Empty;
+
+
     private string ErrorMessage { get; set; } = string.Empty;
     Fidelity Fidelity = new();
     public static CustomSettings? CustomSettings { get; set; } = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Fidelity.Email = Email;
+    }
 
     protected override async Task OnAfterRenderAsync(bool first)
     {
@@ -121,20 +131,43 @@
     }
     private async Task HandleSubmit()
     {
-        Fidelity.CdFidelity = "0000012";
         ErrorMessage = string.Empty;
-        var actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, "api/FidelityCard");
-        var response = await Http.PostAsJsonAsync(actionurl, Fidelity);
+
+        var actionurl = CustomSettings?.EndpointSede;
+        var dbsede = CustomSettings?.DbNameSede;
+        if (string.IsNullOrEmpty(dbsede))
+        {
+            throw new Exception("Il nome del database sede non è stato specificato");
+        }
+
+        var request = new RequestSede(){
+            Request = new()
+            {
+                DbName = dbsede,
+                SpName = "xTSP_API_Get_Fidelity_Code",
+                CalledFrom = "APP FIDELIT"
+            } 
+        };
+        var response = await Http.PostAsJsonAsync(actionurl, request);
+
+        // Fidelity.CdFidelity = "0000012";
 
         if (response.IsSuccessStatusCode)
         {
-            // Salvataggio riuscito
-            Fidelity = new(); // Reset del form
+            actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, "api/FidelityCard");
+            response = await Http.PostAsJsonAsync(actionurl, Fidelity);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Salvataggio riuscito
+                Fidelity = new(); // Reset del form
+            }
+            else
+            {
+                ErrorMessage = await response.Content.ReadAsStringAsync();
+            }
         }
-        else
-        {
-            ErrorMessage = await response.Content.ReadAsStringAsync();
-        }
+
     }
 }
 

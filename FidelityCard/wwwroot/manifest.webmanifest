@@ -19,9 +19,9 @@
       "sizes": "192x192"
     }
   ],
-  "abc"  :  "prova",
   "custom_settings": {
     "endpoint": "https://localhost:7008",
-    "endpoint_sede": ""
+    "endpoint_sede": "http://192.168.0.10:5530/ArcaExec/arca_dataexchange",
+    "dbname_sede": "ADB_API_SVILUPPO"
   }
 }

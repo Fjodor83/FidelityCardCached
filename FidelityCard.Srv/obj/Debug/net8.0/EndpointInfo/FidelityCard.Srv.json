@@ -10,32 +10,32 @@
         "tags": [
           "FidelityCard"
         ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Fidelity"
-                  }
+                  "$ref": "#/components/schemas/Fidelity"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Fidelity"
-                  }
+                  "$ref": "#/components/schemas/Fidelity"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Fidelity"
-                  }
+                  "$ref": "#/components/schemas/Fidelity"
                 }
               }
             }

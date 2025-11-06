@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FidelityCard.Lib")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e8452ce1a56331661b8b4fc57fb47590a005cb72")]
 [assembly: System.Reflection.AssemblyProductAttribute("FidelityCard.Lib")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FidelityCard.Lib")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

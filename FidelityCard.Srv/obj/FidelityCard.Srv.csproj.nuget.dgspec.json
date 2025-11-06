@@ -1,28 +1,29 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj": {}
+    "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj": {
+    "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj",
+        "projectUniqueName": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj",
         "projectName": "FidelityCard.Lib",
-        "projectPath": "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj",
-        "packagesPath": "C:\\Users\\lsassanelli\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Lib\\obj\\",
+        "projectPath": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj",
+        "packagesPath": "C:\\Users\\rsassanelli\\.nuget\\packages\\",
+        "outputPath": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\lsassanelli\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\rsassanelli\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.2.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -69,29 +70,30 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj": {
+    "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj",
+        "projectUniqueName": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj",
         "projectName": "FidelityCard.Srv",
-        "projectPath": "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj",
-        "packagesPath": "C:\\Users\\lsassanelli\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Srv\\obj\\",
+        "projectPath": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Srv\\FidelityCard.Srv.csproj",
+        "packagesPath": "C:\\Users\\rsassanelli\\.nuget\\packages\\",
+        "outputPath": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Srv\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\lsassanelli\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\rsassanelli\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.2.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -105,8 +107,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj": {
-                "projectPath": "C:\\Users\\lsassanelli\\Desktop\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj"
+              "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj": {
+                "projectPath": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\FidelityCard.Lib.csproj"
               }
             }
           }
@@ -169,7 +171,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

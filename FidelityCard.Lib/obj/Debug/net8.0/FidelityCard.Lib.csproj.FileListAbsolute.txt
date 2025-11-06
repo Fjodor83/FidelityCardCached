@@ -9,3 +9,14 @@ C:\Users\lsassanelli\Desktop\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\Fid
 C:\Users\lsassanelli\Desktop\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\refint\FidelityCard.Lib.dll
 C:\Users\lsassanelli\Desktop\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\FidelityCard.Lib.pdb
 C:\Users\lsassanelli\Desktop\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\ref\FidelityCard.Lib.dll
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\bin\Debug\net8.0\FidelityCard.Lib.deps.json
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\bin\Debug\net8.0\FidelityCard.Lib.dll
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\bin\Debug\net8.0\FidelityCard.Lib.pdb
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\FidelityCard.Lib.GeneratedMSBuildEditorConfig.editorconfig
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\FidelityCard.Lib.AssemblyInfoInputs.cache
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\FidelityCard.Lib.AssemblyInfo.cs
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\FidelityCard.Lib.csproj.CoreCompileInputs.cache
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\FidelityCard.Lib.dll
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\refint\FidelityCard.Lib.dll
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\FidelityCard.Lib.pdb
+E:\Sviluppo\VISUAL STUDIO\FIDELITY CARD\FidelityCard.Lib\obj\Debug\net8.0\ref\FidelityCard.Lib.dll

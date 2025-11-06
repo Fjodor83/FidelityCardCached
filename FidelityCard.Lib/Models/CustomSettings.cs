@@ -14,5 +14,8 @@ namespace FidelityCard.Lib.Models
 
         [JsonPropertyName("endpoint_sede")]
         public string EndpointSede { get; set; } = string.Empty;
+
+        [JsonPropertyName("dbname_sede")]
+        public string DbNameSede { get; set; } = string.Empty;
     }
 }

@@ -2,28 +2,32 @@
 @using FidelityCard.Lib.Models
 @using System.Text.Json
 
-@inject HttpClient HC
+@inject HttpClient Http
 @inject IJSRuntime JS
+@inject NavigationManager NM
 
 
-<div class="text-center py-3 mb-4" style="background-color:black; color:white;">
-    <img src="img\logo.png" style="width:min(30%, 150px)" />
-    <h1 class="fs-3 m-0" >Benvenuto nel sistema Fidelity Card</h1>
+<EditForm Model="Fidelity" OnSubmit="OnHandleSubmit" class="p-3">
+<div class="d-flex flex-column" style="height:100vh;">
+    <div class="text-center py-3" style="height:fit-content;">
+        <img src="img\logo.avif" style="width:min(30%, 150px)" />
+        <h1 class="fs-3 m-0">Benvenuto nel sistema Fidelity Card</h1>
+    </div>
+    <div class="flex-grow-1 d-flex flex-row gap-2 align-items-center justify-content-center">
+        <InputText placeholder="Email" @bind-Value="@Fidelity.Email" class="form-control w-50" style="font-size:1.5rem; height:3rem;" />
+            <button type="button" class="btn btn-primary" style="height:3rem;" @onclick="OnHandleSubmit">ENTRA</button>
+    </div>
 </div>
-
-<div class="text-center">
-     <InputText placeholder="Email" @bind-Value ="@Email"/>
-</div>
-
-
+</EditForm>
 
 
 @code 
 {
-    private string Email { get; set; } = string.Empty;
     private string ErrorMessage { get; set; } = string.Empty;
     //  private Dictionary<string, object> manifestData = [];
     public static CustomSettings? CustomSettings { get; set; } = null;
+
+    Fidelity Fidelity = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,6 +41,21 @@
         {
             var manifestData = await JS.InvokeAsync<Dictionary<string, JsonElement>>("manifestInterop.getManifest");
             CustomSettings = JsonSerializer.Deserialize<CustomSettings>(manifestData["custom_settings"]);         
+        }
+    }
+
+    async Task OnHandleSubmit()
+    {
+        var actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, $"api/FidelityCard?email={Fidelity.Email}");
+        var fidelity = await Http.GetFromJsonAsync<Fidelity>(actionurl);
+
+        if (string.IsNullOrEmpty(fidelity?.Email))
+        {
+            NM.NavigateTo($"/Fidelity-form?email={Fidelity.Email}");
+        }
+        else
+        {
+            NM.NavigateTo("https://techservice.it");
         }
     }
 

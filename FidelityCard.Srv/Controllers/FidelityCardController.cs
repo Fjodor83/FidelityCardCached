@@ -14,9 +14,9 @@ public class FidelityCardController(FidelityCardDbContext context) : ControllerB
 
     // GET: api/FidelityCard
     [HttpGet]
-    public async Task<IEnumerable<Fidelity>> Index()
+    public async Task<Fidelity> Get(string email)
     {
-        return await _context.Fidelity.ToListAsync(); ;
+        return await _context.Fidelity.FirstOrDefaultAsync(f => f.Email == email) ?? new Fidelity();
     }
 
 

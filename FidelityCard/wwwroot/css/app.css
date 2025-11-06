@@ -1,5 +1,31 @@
+.btn-primary {
+    --bs-btn-color: #fff  !important;
+    --bs-btn-bg: #000000 !important;
+    --bs-btn-border-color #000000 : #000000 !important;
+    --bs-btn-hover-color: #fff !important;
+    --bs-btn-hover-bg: #535353 !important;
+    --bs-btn-hover-border-color: #000000 !important;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253 !important;
+    --bs-btn-active-color: #fff !important;
+    --bs-btn-active-bg: #000000 !important;
+    --bs-btn-active-border-color: #474747 !important;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125) !important;
+    --bs-btn-disabled-color: #fff !important;
+    --bs-btn-disabled-bg: #000000 !important;
+    --bs-btn-disabled-border-color: #000000 !important;
+}
+
 * {
     border-radius:3px !important;
+}
+
+body{
+    background-color:white;
+    color:#555;
+}
+
+input::placeholder {
+    color: #aaa !important;
 }
 
 .valid.modified:not([type=checkbox]) {
