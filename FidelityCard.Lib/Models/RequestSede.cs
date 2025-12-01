@@ -10,7 +10,9 @@ namespace FidelityCard.Lib.Models
     public class RequestSede
     {
         [JsonPropertyName("request")]
-        public Request Request { get; set; } = default!;    
+        public Request Request { get; set; } = default!;
+        [JsonPropertyName("parameters")]
+        public ParamElement[] Parameters { get; set; } = [];
     }
 
     public class Request
@@ -23,5 +25,13 @@ namespace FidelityCard.Lib.Models
         public string CalledFrom { get; set; } = string.Empty;
         [JsonPropertyName("called_operator")]
         public string CalledOperator { get; set; } = string.Empty;
+    }
+
+    public class ParamElement
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+        [JsonPropertyName("value")]
+        public string? Value { get; set; } = null;
     }
 }

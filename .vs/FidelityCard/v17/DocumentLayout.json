@@ -7,32 +7,28 @@
       "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\pages\\fidelitypage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard\\wwwroot\\manifest.webmanifest||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\wwwroot\\manifest.webmanifest||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{031EE3A7-4B12-49F7-9D47-E86AC6EBBC7C}|FidelityCard.Srv\\FidelityCard.Srv.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard.srv\\controllers\\fidelitycardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{031EE3A7-4B12-49F7-9D47-E86AC6EBBC7C}|FidelityCard.Srv\\FidelityCard.Srv.csproj|solutionrelative:fidelitycard.srv\\controllers\\fidelitycardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2F94DFFF-1426-4714-A1C1-C18A90C5EC47}|FidelityCard.Lib\\FidelityCard.Lib.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard.lib\\models\\customsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2F94DFFF-1426-4714-A1C1-C18A90C5EC47}|FidelityCard.Lib\\FidelityCard.Lib.csproj|solutionrelative:fidelitycard.lib\\models\\customsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2F94DFFF-1426-4714-A1C1-C18A90C5EC47}|FidelityCard.Lib\\FidelityCard.Lib.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard.lib\\models\\requestsede.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2F94DFFF-1426-4714-A1C1-C18A90C5EC47}|FidelityCard.Lib\\FidelityCard.Lib.csproj|solutionrelative:fidelitycard.lib\\models\\requestsede.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{031EE3A7-4B12-49F7-9D47-E86AC6EBBC7C}|FidelityCard.Srv\\FidelityCard.Srv.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard.srv\\controllers\\fidelitycardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{031EE3A7-4B12-49F7-9D47-E86AC6EBBC7C}|FidelityCard.Srv\\FidelityCard.Srv.csproj|solutionrelative:fidelitycard.srv\\controllers\\fidelitycardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|e:\\sviluppo\\visual studio\\fidelity card\\fidelitycard\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B197F19B-7C90-4BFB-AF65-6478E6B1B97D}|FidelityCard\\FidelityCard.csproj|solutionrelative:fidelitycard\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,84 +38,72 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
+              "Title": "app.css",
+              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\css\\app.css",
+              "RelativeDocumentMoniker": "FidelityCard\\wwwroot\\css\\app.css",
+              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\css\\app.css",
+              "RelativeToolTip": "FidelityCard\\wwwroot\\css\\app.css",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAuwBkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-12-01T16:16:55.316Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "index.html",
               "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\index.html",
               "RelativeDocumentMoniker": "FidelityCard\\wwwroot\\index.html",
               "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\index.html",
               "RelativeToolTip": "FidelityCard\\wwwroot\\index.html",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
               "WhenOpened": "2025-11-06T17:29:03.454Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "CustomSettings.cs",
-              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\Models\\CustomSettings.cs",
-              "RelativeDocumentMoniker": "FidelityCard.Lib\\Models\\CustomSettings.cs",
-              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\Models\\CustomSettings.cs",
-              "RelativeToolTip": "FidelityCard.Lib\\Models\\CustomSettings.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-06T17:25:23.138Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "manifest.webmanifest",
-              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\manifest.webmanifest",
-              "RelativeDocumentMoniker": "FidelityCard\\wwwroot\\manifest.webmanifest",
-              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\manifest.webmanifest",
-              "RelativeToolTip": "FidelityCard\\wwwroot\\manifest.webmanifest",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-06T17:24:59.047Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "RequestSede.cs",
-              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\Models\\RequestSede.cs",
-              "RelativeDocumentMoniker": "FidelityCard.Lib\\Models\\RequestSede.cs",
-              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\Models\\RequestSede.cs",
-              "RelativeToolTip": "FidelityCard.Lib\\Models\\RequestSede.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAsAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-06T17:08:34.121Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "Home.razor",
+              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "FidelityCard\\Pages\\Home.razor",
+              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\Pages\\Home.razor",
+              "RelativeToolTip": "FidelityCard\\Pages\\Home.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-03T12:15:33.309Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "FidelityCardController.cs",
               "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Srv\\Controllers\\FidelityCardController.cs",
               "RelativeDocumentMoniker": "FidelityCard.Srv\\Controllers\\FidelityCardController.cs",
               "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Srv\\Controllers\\FidelityCardController.cs",
               "RelativeToolTip": "FidelityCard.Srv\\Controllers\\FidelityCardController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T15:52:16.744Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "app.css",
-              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\css\\app.css",
-              "RelativeDocumentMoniker": "FidelityCard\\wwwroot\\css\\app.css",
-              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\wwwroot\\css\\app.css",
-              "RelativeToolTip": "FidelityCard\\wwwroot\\css\\app.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-11-06T15:26:43.731Z"
+              "DocumentIndex": 1,
+              "Title": "RequestSede.cs",
+              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\Models\\RequestSede.cs",
+              "RelativeDocumentMoniker": "FidelityCard.Lib\\Models\\RequestSede.cs",
+              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard.Lib\\Models\\RequestSede.cs",
+              "RelativeToolTip": "FidelityCard.Lib\\Models\\RequestSede.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAACIAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-01T17:37:56.256Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -129,7 +113,7 @@
               "RelativeDocumentMoniker": "FidelityCard\\Pages\\FidelityPage.razor",
               "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\Pages\\FidelityPage.razor",
               "RelativeToolTip": "FidelityCard\\Pages\\FidelityPage.razor",
-              "ViewState": "AgIAAIQAAAAAAAAAAAAWwJgAAAALAAAAAAAAAA==",
+              "ViewState": "AgIAACMAAAAAAAAAAAAAAFIAAABKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-10-31T15:36:42.015Z",
               "EditorCaption": ""
@@ -137,14 +121,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "Home.razor",
-              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\Pages\\Home.razor",
-              "RelativeDocumentMoniker": "FidelityCard\\Pages\\Home.razor",
-              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\Pages\\Home.razor",
-              "RelativeToolTip": "FidelityCard\\Pages\\Home.razor",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAACkAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-03T12:15:33.309Z",
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\Program.cs",
+              "RelativeDocumentMoniker": "FidelityCard\\Program.cs",
+              "ToolTip": "E:\\Sviluppo\\VISUAL STUDIO\\FIDELITY CARD\\FidelityCard\\Program.cs",
+              "RelativeToolTip": "FidelityCard\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-01T09:27:06.605Z",
               "EditorCaption": ""
             }
           ]

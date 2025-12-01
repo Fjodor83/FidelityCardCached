@@ -21,7 +21,7 @@
   ],
   "custom_settings": {
     "endpoint": "https://localhost:7008",
-    "endpoint_sede": "http://192.168.0.10:5530/ArcaExec/arca_dataexchange",
+    "endpoint_sede": "https://tsapi.trendteam.it/ArcaExec/arca_dataexchange",
     "dbname_sede": "ADB_API_SVILUPPO"
   }
 }

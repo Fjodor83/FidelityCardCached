@@ -80,12 +80,12 @@
         </div>
         <div class="col-md-2">
             <label for="Provincia" class="form-label">Provincia</label>
-            <InputText id="Provincia" @bind-Value="Fidelity.Provincia" class="form-control" />
+            <InputText id="Provincia" @onblur="() => Fidelity.Provincia = Fidelity.Provincia?.ToUpper()" @bind-Value="Fidelity.Provincia" class="form-control" style="text-transform: uppercase;" />
             <ValidationMessage For="@(() => Fidelity.Provincia)" />
         </div>
         <div class="col-md-2">
             <label for="Nazione" class="form-label">Nazione</label>
-            <InputText id="Nazione" @bind-Value="Fidelity.Nazione" class="form-control" />
+            <InputText id="Nazione" @onblur="() => Fidelity.Nazione = Fidelity.Nazione?.ToUpper()" @bind-Value="Fidelity.Nazione" class="form-control" style="text-transform: uppercase;" />
             <ValidationMessage For="@(() => Fidelity.Nazione)" />
         </div>
         <div class="col-md-6">
@@ -134,6 +134,7 @@
         ErrorMessage = string.Empty;
 
         var actionurl = CustomSettings?.EndpointSede;
+        //var actionurl = "http://fidelity.lilloeivagabondi.it:5530/ArcaExec/arca_dataexchange";
         var dbsede = CustomSettings?.DbNameSede;
         if (string.IsNullOrEmpty(dbsede))
         {
@@ -144,28 +145,66 @@
             Request = new()
             {
                 DbName = dbsede,
-                SpName = "xTSP_API_Get_Fidelity_Code",
+                SpName = "xTSP_API_Put_Fidelity",
                 CalledFrom = "APP FIDELIT"
-            } 
+            },
+            Parameters = [
+                new() { Name = "tipo", Value = "D" },
+                new() { Name = "nome", Value = Fidelity.Nome },
+                new() { Name = "cognome", Value = Fidelity.Cognome },
+                new() { Name = "sesso", Value = Fidelity.Sesso },
+                new() { Name = "data_nascita", Value = Fidelity.DataNascita?.ToString("yyyyMMdd") },
+                //  new() { Name = "codice_fiscale", Value = "" },
+                new() { Name = "indirizzo", Value = Fidelity.Indirizzo },
+                new() { Name = "localita", Value = Fidelity.Localita },
+                new() { Name = "cap", Value = Fidelity.Cap },
+                new() { Name = "provincia", Value = Fidelity.Provincia },
+                new() { Name = "nazione", Value = Fidelity.Nazione },
+                new() { Name = "cellulare", Value = Fidelity.Cellulare },
+                new() { Name = "email", Value = Fidelity.Email }
+            ]
         };
         var response = await Http.PostAsJsonAsync(actionurl, request);
 
-        // Fidelity.CdFidelity = "0000012";
 
         if (response.IsSuccessStatusCode)
         {
-            actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, "api/FidelityCard");
-            response = await Http.PostAsJsonAsync(actionurl, Fidelity);
-
-            if (response.IsSuccessStatusCode)
+            var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
+            if (json != null) 
             {
-                // Salvataggio riuscito
-                Fidelity = new(); // Reset del form
+                var jsonRoot = json.RootElement;
+                var responseArray = jsonRoot.GetProperty("response").EnumerateArray();
+                var responseElement = responseArray.First();
+                var datasetArray = responseElement.GetProperty("dataset").EnumerateArray();
+                var datasetElement = datasetArray.First();
+                string? CdFidelity = datasetElement.GetProperty("codice_fidelity").GetString();
+
+                if (CdFidelity != null)
+                {
+                    Fidelity.CdFidelity = CdFidelity;
+                    actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, "api/FidelityCard");
+                    response = await Http.PostAsJsonAsync(actionurl, Fidelity);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Salvataggio riuscito
+
+                        Fidelity = new(); // Reset del form
+                    }
+                    else
+                    {
+                        ErrorMessage = await response.Content.ReadAsStringAsync();
+                    }
+                }
+                else
+                {
+                    ErrorMessage = "Non è stato possibile ottenere il nuovo codice fidelity dalla sede.";
+                }
             }
             else
             {
-                ErrorMessage = await response.Content.ReadAsStringAsync();
-            }
+                ErrorMessage = "Non è stato possibile ottenere il nuovo codice fidelity dalla sede.";
+            }                       
         }
 
     }
