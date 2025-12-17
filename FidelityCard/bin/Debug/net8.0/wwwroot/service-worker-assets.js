@@ -1,20 +1,20 @@
 self.assetsManifest = {
-  "version": "SFSGiSTX",
+  "version": "cTUVZzBN",
   "assets": [
     {
-      "hash": "sha256-aLwz/LNfqIcUYOk1SqYlI9CtZTF7ydb2VRBYnQiDppg=",
+      "hash": "sha256-9/Y737GPUKJHp0MrMy4/BDHF+/PYZiM4srEq5JMKYKg=",
       "url": "_framework/FidelityCard.Lib.pdb"
     },
     {
-      "hash": "sha256-vB7imdFA7SazIqp/4kwt0wQkmYtYc2xauhUIDHyOv60=",
+      "hash": "sha256-0o6UHLFWF2tDOYuHirv2rmWly8em2UEE/v7OwIQ2hSc=",
       "url": "_framework/FidelityCard.Lib.wasm"
     },
     {
-      "hash": "sha256-3E3RB9DSYe9cSbLJ6sIwmieyM6ttVqD61qFqLh/e0DA=",
+      "hash": "sha256-qaQDI16TZKJJzhgcL+M6voFjFsnfC8DVx7pMtd1I0C0=",
       "url": "_framework/FidelityCard.pdb"
     },
     {
-      "hash": "sha256-nASYa5zjjHv4S3OHIcceeaMuHKDzzuAqZPEQbNZyXoo=",
+      "hash": "sha256-EBpGA0WRyPNt/0SL7LfWNokNYwVcKKRdisW6yuVGv84=",
       "url": "_framework/FidelityCard.wasm"
     },
     {
@@ -774,7 +774,7 @@ self.assetsManifest = {
       "url": "_framework/WindowsBase.wasm"
     },
     {
-      "hash": "sha256-Ft1YqYj6SbKworb9aUWNKHUN8JERdjJiiQOr9nXc3VU=",
+      "hash": "sha256-+eDC10K84vbe0o4uhCx4Svbm7awp0thCxFORqM6o5jE=",
       "url": "_framework/blazor.boot.json"
     },
     {
@@ -830,7 +830,7 @@ self.assetsManifest = {
       "url": "_framework/netstandard.wasm"
     },
     {
-      "hash": "sha256-hCdxyIL+gNPdN6spU5jtGeKfAETiipS/JSUXhMOsafs=",
+      "hash": "sha256-p5LXsZvSULPnEux9L47z3c9kbMzLJ97Z4Zx2Hc+wIMY=",
       "url": "css/app.css"
     },
     {

@@ -4,13 +4,11 @@
     "Projects": [
       {
         "Path": "FidelityCard\\FidelityCard.csproj",
-        "Action": "Start",
-        "DebugTarget": "https"
+        "Action": "Start"
       },
       {
         "Path": "FidelityCard.Srv\\FidelityCard.Srv.csproj",
-        "Action": "Start",
-        "DebugTarget": "https"
+        "Action": "Start"
       }
     ]
   }

@@ -9,13 +9,13 @@
 
 <EditForm Model="Fidelity" OnSubmit="OnHandleSubmit" class="p-3">
 <div class="d-flex flex-column" style="height:100vh;">
-    <div unselectable="logooff" class="text-center py-3 noselect" style="height:fit-content;">
+    <div class="text-center py-3 unselectable" style="height:fit-content;">
         <img src="img\logo.avif" style="width:min(30%, 150px)" />
         <h1 class="fs-3 m-0">Benvenuto nel sistema Fidelity Card</h1>
     </div>
     <div class="flex-grow-1 d-flex flex-row gap-2 align-items-center justify-content-center">
-        <InputText placeholder="Email" @bind-Value="@Fidelity.Email" class="form-control w-50" style="font-size:1.5rem; height:3rem;" />
-            <button type="button" class="btn btn-primary" style="height:3rem;" @onclick="OnHandleSubmit">ENTRA</button>
+        <InputText placeholder="Email" @bind-Value="@Fidelity.Email" disabled="@(string.IsNullOrEmpty(Store)?true:false)" class="form-control w-50" style="font-size:1.5rem; height:3rem;" />
+            <button type="button" disabled="@(string.IsNullOrEmpty(Fidelity.Email)?true:false)" class="btn btn-primary" style="height:3rem;" @onclick="OnHandleSubmit">ENTRA</button>
     </div>
 </div>
 </EditForm>
@@ -23,6 +23,8 @@
 
 @code 
 {
+    [SupplyParameterFromQuery(Name = "store")] public string Store { get; set; } = "NE001";     // TODO string.Empty;
+
     private string ErrorMessage { get; set; } = string.Empty;
     //  private Dictionary<string, object> manifestData = [];
     public static CustomSettings? CustomSettings { get; set; } = null;
@@ -51,7 +53,9 @@
 
         if (string.IsNullOrEmpty(fidelity?.Email))
         {
-            NM.NavigateTo($"/Fidelity-form?email={Fidelity.Email}");
+            actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, $"api/FidelityCard/EmailValidation?email={Fidelity.Email}&store={Store}");
+            await Http.GetAsync(actionurl);
+            // NM.NavigateTo($"/Fidelity-form?email={Fidelity.Email}");
         }
         else
         {

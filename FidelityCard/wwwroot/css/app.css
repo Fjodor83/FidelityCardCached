@@ -24,11 +24,17 @@ body{
     color:#555;
 }
 
-.noselect {
-    user-select: none; /* Standard */
-    -webkit-user-select: none; /* Safari/Chrome */
+.unselectable {
+    -webkit-user-select: none; /* Chrome, Safari */
     -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge Legacy */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none;
+}
+
+.unselectable:focus {
+    outline: none; /* Rimuove il bordo di focus */
+    box-shadow: none; /* Rimuove eventuali ombre */
+    pointer-events: none; /* Disabilita interazione */
 }
 
 input::placeholder {

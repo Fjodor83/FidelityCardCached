@@ -40,5 +40,32 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FidelityCard.Srv.Controllers.FidelityCardController",
+    "Method": "EmailValidation",
+    "RelativePath": "api/FidelityCard/EmailValidation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "store",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
   }
 ]

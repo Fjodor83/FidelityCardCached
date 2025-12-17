@@ -71,6 +71,34 @@
           }
         }
       }
+    },
+    "/api/FidelityCard/EmailValidation": {
+      "get": {
+        "tags": [
+          "FidelityCard"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "store",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {

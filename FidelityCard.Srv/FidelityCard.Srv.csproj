@@ -21,4 +21,8 @@
     <ProjectReference Include="..\FidelityCard.Lib\FidelityCard.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Token\" />
+  </ItemGroup>
+
 </Project>
