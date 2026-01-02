@@ -23,10 +23,10 @@
 
 @code 
 {
+    // leggo il parametro "store" dalla query string
     [SupplyParameterFromQuery(Name = "store")] public string Store { get; set; } = "NE001";     // TODO string.Empty;
 
-    private string ErrorMessage { get; set; } = string.Empty;
-    //  private Dictionary<string, object> manifestData = [];
+    private string ErrorMessage { get; set; } = string.Empty;    
     public static CustomSettings? CustomSettings { get; set; } = null;
 
     Fidelity Fidelity = new();
@@ -41,6 +41,7 @@
         await base.OnAfterRenderAsync(first);
         // if (CustomSettings == null)
         {
+            // leggo dal Manifest i dati relativi a custom_settings
             var manifestData = await JS.InvokeAsync<Dictionary<string, JsonElement>>("manifestInterop.getManifest");
             CustomSettings = JsonSerializer.Deserialize<CustomSettings>(manifestData["custom_settings"]);         
         }
@@ -48,17 +49,19 @@
 
     async Task OnHandleSubmit()
     {
-        var actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, $"api/FidelityCard?email={Fidelity.Email}");
+        // effettuo chiamata al server per verificare esistenza codice fidelity
+        var actionurl = $"{CustomSettings?.Endpoint ?? string.Empty}/api/FidelityCard?email={Fidelity.Email}";
         var fidelity = await Http.GetFromJsonAsync<Fidelity>(actionurl);
 
         if (string.IsNullOrEmpty(fidelity?.Email))
         {
-            actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, $"api/FidelityCard/EmailValidation?email={Fidelity.Email}&store={Store}");
+            // effettuo chiamata al server per validare fidelity
+            actionurl = $"{CustomSettings?.Endpoint ?? string.Empty}/api/FidelityCard/EmailValidation?email={Fidelity.Email}&store={Store}";
             await Http.GetAsync(actionurl);
-            // NM.NavigateTo($"/Fidelity-form?email={Fidelity.Email}");
         }
         else
         {
+            // l'e-mail eiste (dovremo fare altro, per il momento facciamo un semplice re-direct)
             NM.NavigateTo("https://techservice.it");
         }
     }

@@ -99,6 +99,44 @@
           }
         }
       }
+    },
+    "/api/FidelityCard/EmailConfirmation": {
+      "get": {
+        "tags": [
+          "FidelityCard"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -109,7 +147,8 @@
           "cognome",
           "dataNascita",
           "email",
-          "nome"
+          "nome",
+          "store"
         ],
         "type": "object",
         "properties": {
@@ -118,6 +157,10 @@
             "format": "int32"
           },
           "cdFidelity": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "store": {
             "minLength": 1,
             "type": "string"
           },

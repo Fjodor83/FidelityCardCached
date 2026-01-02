@@ -31,15 +31,57 @@ public class FidelityCardController(FidelityCardDbContext context,
         return await _context.Fidelity.FirstOrDefaultAsync(f => f.Email == email) ?? new Fidelity();
     }
 
+
     // GET: api/FidelityCard/EmailValidation
     [HttpGet("[action]")]
     public async Task EmailValidation(string email, string store)
     {
+        // scrivo sul server un token con nome random (all'interno scrivo store e email)
         var token = TokenManager.Generate();
-        System.IO.File.WriteAllText(Path.Combine(_env.ContentRootPath, "Token", token), store);
+        System.IO.File.WriteAllText(Path.Combine(_env.ContentRootPath, "Token", token), $"{store}\r\n{email}");
 
+        // invio e-mail al cliente (per verificare che email esista) con un link da cliccare per conferma
+        // (il link porta alla forma di registrazione dati)
+        // (l'url del client è impostato in app settings)
         var emailSender = new EmailSender(_logger,_emailSettings,_config);
-        await emailSender.SendEmailAsync(email, "SUNS Fidelity card - Registrazione utente", $"{token}\r\n{store}");
+        var section = _config.GetSection("EmailMessages");
+        var emailBody = section.GetValue<string>("EmailValidation") ?? "{token}";
+
+        var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/Fidelity-form?token={token}";
+        var urlToken = emailBody.Replace("{token}", $"<a href=\"{url}\">Clicca per confermare</a>");
+        await emailSender.SendEmailAsync(email, "SUNS Fidelity card - Registrazione utente", urlToken);
+    }
+
+    // GET: api/FidelityCard/EmailConfirmation
+    [HttpGet("[action]")]
+    public async Task<string> EmailConfirmation(string token)
+    {
+        string pathName = Path.Combine(_env.ContentRootPath, "Token");
+        string fileName = Path.Combine(pathName, token);
+       
+        var files = System.IO.Directory.EnumerateFiles(pathName);
+
+        // cancello i file (relativi ai roken) più vecchi di 15 minuti
+        foreach (var file in files) { 
+            FileInfo fileInfo = new (file);
+            if (fileInfo.CreationTime < DateTime.Now.AddMinutes(-15))
+            {
+                try
+                {
+                    System.IO.File.Delete(file);
+                }
+                catch { }
+            }
+        }
+        
+        // leggo il contenuto del file e lo torno indietro
+        if (System.IO.File.Exists(fileName)) { 
+            string fileContent = await System.IO.File.ReadAllTextAsync(fileName);
+
+            return fileContent;
+        }
+      
+        return string.Empty;
     }
 
     // POST: api/FidelityCard

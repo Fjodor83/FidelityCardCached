@@ -4,132 +4,154 @@
 @using System.Text.Json
 @inject HttpClient Http
 @inject IJSRuntime JS
+@inject NavigationManager NM
 
-
-<div class="text-center py-3" style="height:fit-content;">
-    <img src="img\logo.avif" style="width:min(30%, 150px)" />
-    <h1 class="fs-3 m-0">Registrazione utente</h1>
-</div>
-
-<EditForm Model="Fidelity" OnSubmit="HandleSubmit" class="p-3">
-<DataAnnotationsValidator />
-    @if (!string.IsNullOrEmpty(ErrorMessage))
-    {
-        <div class="alert alert-danger">@ErrorMessage</div>
-    }
-    
-    <!-- Prima riga: Nome e Cognome -->
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="Nome" class="form-label">Nome</label>
-            <InputText id="Nome" @bind-Value="Fidelity.Nome" class="form-control"/>
-            <ValidationMessage For="@(() => Fidelity.Nome)" />
-        </div>
-        <div class="col-md-6">
-            <label for="Cognome" class="form-label">Cognome</label>
-            <InputText id="Cognome" @bind-Value="Fidelity.Cognome" class="form-control" />
-            <ValidationMessage For="@(() => Fidelity.Cognome)" />
-        </div>
+@if(IsVisible)
+{
+    <div class="text-center py-3" style="height:fit-content;">
+        <img src="img\logo.avif" style="width:min(30%, 150px)" />
+        <h1 class="fs-3 m-0">Registrazione utente</h1>
     </div>
+    <EditForm Model="Fidelity" OnSubmit="OnHandleSubmit" class="p-3">
+        <DataAnnotationsValidator />
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger">@ErrorMessage</div>
+        }
 
-    <!-- Seconda riga: Email, Data di nascita, Sesso -->
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="Email" class="form-label">Email</label>
-            <InputText id="Email" readonly="readonly" @bind-Value="Fidelity.Email" class="form-control" />
-            <ValidationMessage For="@(() => Fidelity.Email)" />
+        <!-- Prima riga: Nome e Cognome -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="Nome" class="form-label">Nome</label>
+                <InputText id="Nome" @bind-Value="Fidelity.Nome" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.Nome)" />
+            </div>
+            <div class="col-md-6">
+                <label for="Cognome" class="form-label">Cognome</label>
+                <InputText id="Cognome" @bind-Value="Fidelity.Cognome" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.Cognome)" />
+            </div>
         </div>
-        <div class="col-md-3">
-            <label for="DataNascita" class="form-label">Data di nascita</label>
-            <InputDate id="DataNascita" @bind-Value="Fidelity.DataNascita" class="form-control" />
-            <ValidationMessage For="@(() => Fidelity.DataNascita)" />
-        </div>
-        <div class="col-md-3">
-            <label for="Sesso" class="form-label">Sesso</label>
-            <select class="form-control" @onchange="(e) => Fidelity.Sesso = (string?)e.Value">    
-                <option value="">-- Seleziona un elemento --</option>    
-                    @foreach (var item in Helpers.SessoType)    
+
+        <!-- Seconda riga: Email, Data di nascita, Sesso -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="Email" class="form-label">Email</label>
+                <InputText id="Email" readonly="readonly" @bind-Value="Fidelity.Email" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.Email)" />
+            </div>
+            <div class="col-md-3">
+                <label for="DataNascita" class="form-label">Data di nascita</label>
+                <InputDate id="DataNascita" @bind-Value="Fidelity.DataNascita" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.DataNascita)" />
+            </div>
+            <div class="col-md-3">
+                <label for="Sesso" class="form-label">Sesso</label>
+                <select class="form-control" @onchange="(e) => Fidelity.Sesso = (string?)e.Value">
+                    <option value="">-- Seleziona un elemento --</option>
+                    @foreach (var item in Helpers.SessoType)
                     {
                         <option value="@item.Value">@item.Key</option>
                     }
-            </select>
-            <ValidationMessage For="@(() => Fidelity.Sesso)" />
+                </select>
+                <ValidationMessage For="@(() => Fidelity.Sesso)" />
+            </div>
         </div>
-    </div>
 
-    <!-- Terza riga: Indirizzo e Località -->
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="Indirizzo" class="form-label">Indirizzo</label>
-            <InputText id="Indirizzo" @bind-Value="Fidelity.Indirizzo" class="form-control" />
-            <ValidationMessage For="@(() => Fidelity.Indirizzo)" />
+        <!-- Terza riga: Indirizzo e Località -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="Indirizzo" class="form-label">Indirizzo</label>
+                <InputText id="Indirizzo" @bind-Value="Fidelity.Indirizzo" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.Indirizzo)" />
+            </div>
+            <div class="col-md-6">
+                <label for="Localita" class="form-label">Località</label>
+                <InputText id="Localita" @bind-Value="Fidelity.Localita" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.Localita)" />
+            </div>
         </div>
-        <div class="col-md-6">
-            <label for="Localita" class="form-label">Località</label>
-            <InputText id="Localita" @bind-Value="Fidelity.Localita" class="form-control" />
-            <ValidationMessage For="@(() => Fidelity.Localita)" />
-        </div>
-    </div>
 
-    <!-- Quarta riga: CAP, Provincia, Nazione, Cellulare -->
-    <div class="row mb-3">
-        <div class="col-md-2">
-            <label for="Cap" class="form-label">CAP</label>
-            <InputText id="Cap" @bind-Value="Fidelity.Cap" class="form-control" />
-            <ValidationMessage For="@(() => Fidelity.Cap)" />
+        <!-- Quarta riga: CAP, Provincia, Nazione, Cellulare -->
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <label for="Cap" class="form-label">CAP</label>
+                <InputText id="Cap" @bind-Value="Fidelity.Cap" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.Cap)" />
+            </div>
+            <div class="col-md-2">
+                <label for="Provincia" class="form-label">Provincia</label>
+                <InputText id="Provincia" @onblur="() => Fidelity.Provincia = Fidelity.Provincia?.ToUpper()" @bind-Value="Fidelity.Provincia" class="form-control" style="text-transform: uppercase;" />
+                <ValidationMessage For="@(() => Fidelity.Provincia)" />
+            </div>
+            <div class="col-md-2">
+                <label for="Nazione" class="form-label">Nazione</label>
+                <InputText id="Nazione" @onblur="() => Fidelity.Nazione = Fidelity.Nazione?.ToUpper()" @bind-Value="Fidelity.Nazione" class="form-control" style="text-transform: uppercase;" />
+                <ValidationMessage For="@(() => Fidelity.Nazione)" />
+            </div>
+            <div class="col-md-6">
+                <label for="Cellulare" class="form-label">Cellulare</label>
+                <InputText id="Cellulare" @bind-Value="Fidelity.Cellulare" class="form-control" />
+                <ValidationMessage For="@(() => Fidelity.Cellulare)" />
+            </div>
         </div>
-        <div class="col-md-2">
-            <label for="Provincia" class="form-label">Provincia</label>
-            <InputText id="Provincia" @onblur="() => Fidelity.Provincia = Fidelity.Provincia?.ToUpper()" @bind-Value="Fidelity.Provincia" class="form-control" style="text-transform: uppercase;" />
-            <ValidationMessage For="@(() => Fidelity.Provincia)" />
-        </div>
-        <div class="col-md-2">
-            <label for="Nazione" class="form-label">Nazione</label>
-            <InputText id="Nazione" @onblur="() => Fidelity.Nazione = Fidelity.Nazione?.ToUpper()" @bind-Value="Fidelity.Nazione" class="form-control" style="text-transform: uppercase;" />
-            <ValidationMessage For="@(() => Fidelity.Nazione)" />
-        </div>
-        <div class="col-md-6">
-            <label for="Cellulare" class="form-label">Cellulare</label>
-            <InputText id="Cellulare" @bind-Value="Fidelity.Cellulare" class="form-control" />
-            <ValidationMessage For="@(() => Fidelity.Cellulare)" />
-        </div>
-    </div>
 
-    <!-- Pulante di submit -->
-    <div class="text-center mt-4">
-        <button type="submit" class="btn btn-primary px-5">
-            Salva
-        </button>
-    </div>
+        <!-- Pulante di submit -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary px-5">
+                Salva
+            </button>
+        </div>
 
-</EditForm>
+    </EditForm>
+}
 
 
 @code {
-    [SupplyParameterFromQuery(Name = "email")] public string Email { get; set; } = string.Empty;
-
+    // leggo il parametro "token" dalla query string
+    [SupplyParameterFromQuery(Name = "token")] public string Token { get; set; } = string.Empty;
 
     private string ErrorMessage { get; set; } = string.Empty;
     Fidelity Fidelity = new();
     public static CustomSettings? CustomSettings { get; set; } = null;
 
-    protected override void OnInitialized()
+    private bool IsVisible { get; set; } = true;
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-
-        Fidelity.Email = Email;
+        await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool first)
     {
         await base.OnAfterRenderAsync(first);
-        // if (CustomSettings == null)
+
+        // l'if qui sotto non dovrebbe servire più
+        if (CustomSettings == null)
         {
+            // leggo dal Manifest i dati relativi a custom_settings
             var manifestData = await JS.InvokeAsync<Dictionary<string, JsonElement>>("manifestInterop.getManifest");
             CustomSettings = JsonSerializer.Deserialize<CustomSettings>(manifestData["custom_settings"]);
+
+            // effettuo chiamata al server per leggere contenuto del token
+            var actionurl = $"{CustomSettings?.Endpoint ?? string.Empty}/api/FidelityCard/EmailConfirmation?token={Token}";
+            var fileContent = await Http.GetStringAsync(actionurl);
+            if (!string.IsNullOrEmpty(fileContent))
+            {
+                // ricavo i parametri (e-mail e store) dal file letto tramite api 
+                string[] param = fileContent.Split("\r\n");
+                Fidelity.Email = param[1];
+                Fidelity.Store = param[0];
+                IsVisible = true;
+            }
+            else
+            {
+                NM.NavigateTo("/error");
+            }
+            StateHasChanged();
         }
     }
-    private async Task HandleSubmit()
+    
+    private async Task OnHandleSubmit()
     {
         ErrorMessage = string.Empty;
 
@@ -141,6 +163,7 @@
             throw new Exception("Il nome del database sede non è stato specificato");
         }
 
+        // effettuo chiamata api esterna per creare nuova fidelity
         var request = new RequestSede(){
             Request = new()
             {
@@ -149,6 +172,7 @@
                 CalledFrom = "APP FIDELIT"
             },
             Parameters = [
+                new() { Name = "store", Value = Fidelity.Store },
                 new() { Name = "tipo", Value = "D" },
                 new() { Name = "nome", Value = Fidelity.Nome },
                 new() { Name = "cognome", Value = Fidelity.Cognome },
@@ -169,6 +193,7 @@
 
         if (response.IsSuccessStatusCode)
         {
+            // analizzo risposta e leggo codice fidelity
             var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
             if (json != null) 
             {
@@ -182,6 +207,8 @@
                 if (CdFidelity != null)
                 {
                     Fidelity.CdFidelity = CdFidelity;
+
+                    // effettuo chiamata al server per salvare nuova fidelity
                     actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, "api/FidelityCard");
                     response = await Http.PostAsJsonAsync(actionurl, Fidelity);
 

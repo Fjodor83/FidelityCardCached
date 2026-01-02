@@ -1,0 +1,16 @@
+﻿@page "/error"
+
+
+<div class="d-flex flex-column" style="height:100vh;">
+    <div class="text-center py-3 unselectable" style="height:fit-content;">
+        <img src="img\logo.avif" style="width:min(30%, 150px)" />
+        <h1 class="fs-3 m-0">@Message</h1>
+    </div>
+</div>
+
+
+
+@code 
+{
+    [SupplyParameterFromQuery(Name = "message")] public string Message { get; set; } = "Errore nella validazione del token di riconoscimento.";
+}

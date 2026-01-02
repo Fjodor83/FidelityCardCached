@@ -14,6 +14,10 @@ public class Fidelity
     public string CdFidelity { get; set; } = string.Empty;
 
     [Required]
+    [Column("CdNe", TypeName = "varchar(6)")] 
+    public string Store { get; set; } = string.Empty;
+
+    [Required]
     [Column(TypeName = "varchar(50)")]
     [StringLength(50)]
     public string Cognome { get; set; } = string.Empty;

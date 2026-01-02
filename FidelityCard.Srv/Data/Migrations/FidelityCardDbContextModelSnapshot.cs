@@ -81,6 +81,11 @@ namespace FidelityCard.Srv.Data.Migrations
                         .HasMaxLength(1)
                         .HasColumnType("char(1)");
 
+                    b.Property<string>("Store")
+                        .IsRequired()
+                        .HasColumnType("varchar(6)")
+                        .HasColumnName("CdNe");
+
                     b.HasKey("IdFidelity");
 
                     b.HasIndex("CdFidelity")

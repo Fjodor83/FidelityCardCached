@@ -43,6 +43,32 @@
   },
   {
     "ContainingType": "FidelityCard.Srv.Controllers.FidelityCardController",
+    "Method": "EmailConfirmation",
+    "RelativePath": "api/FidelityCard/EmailConfirmation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "token",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FidelityCard.Srv.Controllers.FidelityCardController",
     "Method": "EmailValidation",
     "RelativePath": "api/FidelityCard/EmailValidation",
     "HttpMethod": "GET",
