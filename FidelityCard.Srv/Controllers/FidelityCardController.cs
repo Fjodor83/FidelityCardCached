@@ -1,6 +1,7 @@
 ﻿using FidelityCard.Lib.Models;
 using FidelityCard.Lib.Services;
 using FidelityCard.Srv.Data;
+using FidelityCard.Srv.Services; // Namespace for ITokenService
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -17,7 +18,8 @@ public class FidelityCardController(FidelityCardDbContext context,
         IConfiguration config,
         IWebHostEnvironment env,
         ICardGeneratorService cardGenerator,
-        IEmailService emailService) : ControllerBase
+        IEmailService emailService,
+        ITokenService tokenService) : ControllerBase
 {
     private readonly FidelityCardDbContext _context = context;
 
@@ -27,6 +29,7 @@ public class FidelityCardController(FidelityCardDbContext context,
     private readonly IWebHostEnvironment _env = env;
     private readonly ICardGeneratorService _cardGenerator = cardGenerator;
     private readonly IEmailService _emailService = emailService;
+    private readonly ITokenService _tokenService = tokenService;
 
     // GET: api/FidelityCard
     [HttpGet]
@@ -43,9 +46,8 @@ public class FidelityCardController(FidelityCardDbContext context,
         // Verifica se l'utente esiste già
         var existingUser = await _context.Fidelity.FirstOrDefaultAsync(f => f.Email == email);
 
-        // Genero token
-        var token = TokenManager.Generate();
-        System.IO.File.WriteAllText(Path.Combine(_env.ContentRootPath, "Token", token), $"{store}\r\n{email}");
+        // Genero token usando il servizio
+        var token = _tokenService.GenerateToken(email, store);
 
         if (existingUser != null)
         {
@@ -70,49 +72,26 @@ public class FidelityCardController(FidelityCardDbContext context,
     [HttpGet("[action]")]
     public async Task<string> EmailConfirmation(string token)
     {
-        string pathName = Path.Combine(_env.ContentRootPath, "Token");
-        string fileName = Path.Combine(pathName, token);
-       
-        var files = System.IO.Directory.EnumerateFiles(pathName);
-
-        // cancello i file (relativi ai roken) più vecchi di 15 minuti
-        foreach (var file in files) { 
-            FileInfo fileInfo = new (file);
-            if (fileInfo.CreationTime < DateTime.Now.AddMinutes(-15))
-            {
-                try
-                {
-                    System.IO.File.Delete(file);
-                }
-                catch { }
-            }
-        }
-        
-        // leggo il contenuto del file e lo torno indietro
-        if (System.IO.File.Exists(fileName)) { 
-            string fileContent = await System.IO.File.ReadAllTextAsync(fileName);
-
-            return fileContent;
-        }
-      
-        return string.Empty;
+        // Utilizzo il servizio per recuperare i dati del token
+        // Questo include anche la logica di cleanup (implementata nel servizio per ora)
+        return await _tokenService.GetTokenDataAsync(token);
     }
 
     // GET: api/FidelityCard/Profile
     [HttpGet("Profile")]
     public async Task<IActionResult> GetProfile(string token)
     {
-        // Logica validazione token simile a EmailConfirmation
-        string pathName = Path.Combine(_env.ContentRootPath, "Token");
-        string fileName = Path.Combine(pathName, token);
+        // Recupero contenuto token dal servizio
+        string fileContent = await _tokenService.GetTokenDataAsync(token);
 
-        if (!System.IO.File.Exists(fileName))
+        if (string.IsNullOrEmpty(fileContent))
         {
              return NotFound("Token non valido o scaduto");
         }
 
-        string fileContent = await System.IO.File.ReadAllTextAsync(fileName);
         string[] param = fileContent.Split("\r\n");
+        if (param.Length < 2) return BadRequest("Formato token non valido");
+
         string email = param[1];
 
         var user = await _context.Fidelity.FirstOrDefaultAsync(f => f.Email == email);
