@@ -1,6 +1,17 @@
+:root {
+    --brand-primary: #105a12;
+    --brand-secondary: #053e30;
+    --brand-accent: #26b050;
+    --brand-gradient-start: #105a12ff;
+    --brand-gradient-end: #053e30ff;
+    --text-color: #333;
+    --bg-light: #f8f9fa;
+}
+
 html,
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--text-color);
 }
 
 h1:focus {
@@ -9,13 +20,13 @@ h1:focus {
 
 a,
 .btn-link {
-    color: #0071c1;
+    color: var(--brand-primary);
 }
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: var(--brand-primary);
+    border-color: var(--brand-secondary);
 }
 
 .btn:focus,
@@ -23,7 +34,7 @@ a,
 .btn-link.nav-link:focus,
 .form-control:focus,
 .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--brand-accent);
 }
 
 .content {
@@ -31,7 +42,7 @@ a,
 }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    outline: 1px solid var(--brand-accent);
 }
 
 .invalid {
@@ -91,7 +102,7 @@ a,
 }
 
 .loading-progress circle:last-child {
-    stroke: #1b6ec2;
+    stroke: var(--brand-primary);
     stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
     transition: stroke-dasharray 0.05s ease-in-out;
 }
@@ -128,7 +139,7 @@ code {
 
 /* Background con gradiente migliorato */
 .home-bg {
-    background: linear-gradient(135deg, #105a12ff 0%, #053e30ff 100%);
+    background: linear-gradient(135deg, var(--brand-gradient-start) 0%, var(--brand-gradient-end) 100%);
     position: relative;
     min-height: 100vh;
 }
@@ -674,6 +685,10 @@ code {
     box-shadow: 0 0 0 3px rgba(16, 90, 18, 0.15);
 }
 
+select.form-control-modern {
+    cursor: pointer;
+}
+
 /* Modern Date Picker Styling */
 input[type="date"].form-control-modern {
     position: relative;
@@ -708,7 +723,8 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
 }
 
 /* Readonly input styling */
-.form-control-modern:read-only {
+input.form-control-modern:read-only,
+textarea.form-control-modern:read-only {
     background-color: #e9ecef;
     opacity: 1;
     cursor: not-allowed;

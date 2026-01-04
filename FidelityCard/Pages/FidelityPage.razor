@@ -1,8 +1,10 @@
 ﻿@page "/fidelity-form"
 @using FidelityCard.Lib.Models
 @using System.Text.Json
-@inject HttpClient Http
-@inject IJSRuntime JS
+@using FidelityCard.Services
+@using FidelityCard.Lib.Models
+@using System.Text.Json
+@using FidelityCard.Services
 @inject NavigationManager NM
 
 <PageTitle>Completa Profilo - Suns</PageTitle>
@@ -181,134 +183,50 @@
 
 
 @code {
-    // leggo il parametro "token" dalla query string
     [SupplyParameterFromQuery(Name = "token")] public string Token { get; set; } = string.Empty;
 
     private string ErrorMessage { get; set; } = string.Empty;
-    Fidelity Fidelity = new();
-    public static CustomSettings? CustomSettings { get; set; } = null;
+    private Fidelity Fidelity { get; set; } = new();
     private bool Success { get; set; } = false;
+    private bool IsVisible { get; set; } = false;
 
-    private bool IsVisible { get; set; } = true;
+    [Inject] private IFidelityClientService FidelityClientService { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool first)
-    {
-        await base.OnAfterRenderAsync(first);
-
-        // l'if qui sotto non dovrebbe servire più
-        if (CustomSettings == null)
+        if (string.IsNullOrEmpty(Token))
         {
-            // leggo dal Manifest i dati relativi a custom_settings
-            var manifestData = await JS.InvokeAsync<Dictionary<string, JsonElement>>("manifestInterop.getManifest");
-            CustomSettings = JsonSerializer.Deserialize<CustomSettings>(manifestData["custom_settings"]);
+            NM.NavigateTo("/error");
+            return;
+        }
 
-            // effettuo chiamata al server per leggere contenuto del token
-            var actionurl = $"{CustomSettings?.Endpoint ?? string.Empty}/api/FidelityCard/EmailConfirmation?token={Token}";
-            var fileContent = await Http.GetStringAsync(actionurl);
-            if (!string.IsNullOrEmpty(fileContent))
-            {
-                // ricavo i parametri (e-mail e store) dal file letto tramite api 
-                string[] param = fileContent.Split("\r\n");
-                Fidelity.Email = param[1];
-                Fidelity.Store = param[0];
-                IsVisible = true;
-            }
-            else
-            {
-                NM.NavigateTo("/error");
-            }
-            StateHasChanged();
+        try
+        {
+            // Load initial data (Email, Store) from token via Service
+            var initialData = await FidelityClientService.GetRegistrationDataAsync(Token);
+            Fidelity.Email = initialData.Email;
+            Fidelity.Store = initialData.Store;
+            IsVisible = true;
+        }
+        catch (Exception)
+        {
+             NM.NavigateTo("/error");
         }
     }
-    
+
     private async Task OnHandleSubmit()
     {
         ErrorMessage = string.Empty;
-
-        var actionurl = CustomSettings?.EndpointSede;
-        //var actionurl = "http://fidelity.lilloeivagabondi.it:5530/ArcaExec/arca_dataexchange";
-        var dbsede = CustomSettings?.DbNameSede;
-        if (string.IsNullOrEmpty(dbsede))
+        
+        try
         {
-            throw new Exception("Il nome del database sede non è stato specificato");
+            await FidelityClientService.RegisterAsync(Fidelity);
+            Success = true;
         }
-
-        // effettuo chiamata api esterna per creare nuova fidelity
-        var request = new RequestSede(){
-            Request = new()
-            {
-                DbName = dbsede,
-                SpName = "xTSP_API_Put_Fidelity",
-                CalledFrom = "APP FIDELIT"
-            },
-            Parameters = [
-                new() { Name = "store", Value = Fidelity.Store },
-                new() { Name = "tipo", Value = "D" },
-                new() { Name = "nome", Value = Fidelity.Nome },
-                new() { Name = "cognome", Value = Fidelity.Cognome },
-                new() { Name = "sesso", Value = Fidelity.Sesso },
-                new() { Name = "data_nascita", Value = Fidelity.DataNascita?.ToString("yyyyMMdd") },
-                //  new() { Name = "codice_fiscale", Value = "" },
-                new() { Name = "indirizzo", Value = Fidelity.Indirizzo },
-                new() { Name = "localita", Value = Fidelity.Localita },
-                new() { Name = "cap", Value = Fidelity.Cap },
-                new() { Name = "provincia", Value = Fidelity.Provincia },
-                new() { Name = "nazione", Value = Fidelity.Nazione },
-                new() { Name = "cellulare", Value = Fidelity.Cellulare },
-                new() { Name = "email", Value = Fidelity.Email }
-            ]
-        };
-        var response = await Http.PostAsJsonAsync(actionurl, request);
-
-
-        if (response.IsSuccessStatusCode)
+        catch (Exception ex)
         {
-            // analizzo risposta e leggo codice fidelity
-            var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
-            if (json != null) 
-            {
-                var jsonRoot = json.RootElement;
-                var responseArray = jsonRoot.GetProperty("response").EnumerateArray();
-                var responseElement = responseArray.First();
-                var datasetArray = responseElement.GetProperty("dataset").EnumerateArray();
-                var datasetElement = datasetArray.First();
-                string? CdFidelity = datasetElement.GetProperty("codice_fidelity").GetString();
-
-                if (CdFidelity != null)
-                {
-                    Fidelity.CdFidelity = CdFidelity;
-
-                    // effettuo chiamata al server per salvare nuova fidelity
-                    actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, "api/FidelityCard");
-                    response = await Http.PostAsJsonAsync(actionurl, Fidelity);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // Salvataggio riuscito
-                        // Mostra messaggio di successo
-                        Success = true;
-                        // Fidelity = new(); // Non resettiamo per ora, o se resettiamo non importa perché mostriamo il success message
-                    }
-                    else
-                    {
-                        ErrorMessage = await response.Content.ReadAsStringAsync();
-                    }
-                }
-                else
-                {
-                    ErrorMessage = "Non è stato possibile ottenere il nuovo codice fidelity dalla sede.";
-                }
-            }
-            else
-            {
-                ErrorMessage = "Non è stato possibile ottenere il nuovo codice fidelity dalla sede.";
-            }                       
+            ErrorMessage = ex.Message;
         }
-
     }
 }
 

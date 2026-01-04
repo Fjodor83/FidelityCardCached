@@ -30,6 +30,9 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ICardGeneratorService, CardGeneratorService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IFidelityService, FidelityService>();
+
+builder.Services.AddHttpClient("SedeClient");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

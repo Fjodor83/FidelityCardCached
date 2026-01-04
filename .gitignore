@@ -7,3 +7,4 @@ obj/
 .gemini/
 .idea/
 .vscode/
+**/Token/

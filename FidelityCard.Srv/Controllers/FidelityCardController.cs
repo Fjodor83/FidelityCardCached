@@ -19,7 +19,8 @@ public class FidelityCardController(FidelityCardDbContext context,
         IWebHostEnvironment env,
         ICardGeneratorService cardGenerator,
         IEmailService emailService,
-        ITokenService tokenService) : ControllerBase
+        ITokenService tokenService,
+        IFidelityService fidelityService) : ControllerBase
 {
     private readonly FidelityCardDbContext _context = context;
 
@@ -30,6 +31,7 @@ public class FidelityCardController(FidelityCardDbContext context,
     private readonly ICardGeneratorService _cardGenerator = cardGenerator;
     private readonly IEmailService _emailService = emailService;
     private readonly ITokenService _tokenService = tokenService;
+    private readonly IFidelityService _fidelityService = fidelityService;
 
     // GET: api/FidelityCard
     [HttpGet]
@@ -125,42 +127,21 @@ public class FidelityCardController(FidelityCardDbContext context,
 
         if (fidelity == null)
         {
-            Console.WriteLine("Modello nullo");
-            return BadRequest();
+            return BadRequest("Modello nullo");
         }
 
-        _context.Fidelity.Add(fidelity);
         try
         {
-            await _context.SaveChangesAsync();
-            
-            // Generazione Card e Invio Email
-            try
-            {
-                var cardBytes = await _cardGenerator.GeneraCardDigitaleAsync(fidelity, fidelity.Store);
-                await _emailService.InviaEmailBenvenutoAsync(fidelity.Email ?? "", fidelity.Nome ?? "Cliente", fidelity.CdFidelity ?? "", cardBytes);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Errore durante generazione card o invio email benvenuto.");
-                // Non blocchiamo il ritorno OK, la registrazione è avvenuta
-            }
-
-            return Ok(fidelity);
+            var result = await _fidelityService.RegisterAsync(fidelity);
+            return Ok(result);
         }
         catch (Exception ex)
         {
-            if (ex.InnerException != null)
-            {
-                return StatusCode(500, ex.InnerException.Message);
-            }
-            else 
-            {
-                return StatusCode(500, ex.Message);
-            }
-
+             // Log the exception? Controller already has logger but service also logs.
+             // Return appropriate error.
+             return StatusCode(500, ex.Message);
         }
     }
-
 }
+
 
