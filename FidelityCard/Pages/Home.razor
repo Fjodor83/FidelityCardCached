@@ -8,73 +8,111 @@
 
 <PageTitle>Registrazione - Suns</PageTitle>
 
-<div class="min-vh-100 d-flex align-items-center welcome-bg">
+<!-- Toast Notification -->
+<div class="toast-container-custom">
+    <div class="toast-custom @(IsToastVisible ? "show" : "") @(IsToastError ? "error" : "success")">
+        <div class="toast-icon">
+            <i class="bi @(IsToastError ? "bi-x-circle-fill" : "bi-check-circle-fill")"></i>
+        </div>
+        <div class="toast-content">
+            <h6>@(IsToastError ? "Attenzione" : "Successo")</h6>
+            <p>@ToastMessage</p>
+        </div>
+    </div>
+</div>
+
+<div class="min-vh-100 d-flex align-items-center py-4" style="background: var(--primary-gradient);">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                
+            <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6 col-xxl-5">
+
                 <!-- Main Registration Card -->
-                <div class="card border-0 shadow-lg welcome-card">
-                    <div class="card-body p-5 text-center">
-                        
+                <div class="card border-0 shadow-lg fade-in-up" style="border-radius: 24px; overflow: hidden;">
+                    <div class="card-body p-4 p-md-5 text-center bg-white position-relative">
+
+                        <!-- Decorative top accent -->
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary-gradient);"></div>
+
                         <!-- Branding -->
-                        <div class="mb-4 logo-container">
-                            <img src="images/Suns.webp" alt="SUNS Logo" class="logo-img-welcome" />
-                            <p class="text-muted mb-0">Zero & Company</p>
+                        <div class="mb-4 mt-2">
+                            <div class="d-inline-block p-3 rounded-circle shadow-sm mb-3" style="background: #ffffff;">
+                                <img src="images/Suns.webp" alt="SUNS Logo" style="width: 70px; height: auto;" />
+                            </div>
+                            <h6 class="text-uppercase text-secondary fw-bold letter-spacing-2 mb-0" style="font-size: 0.75rem; letter-spacing: 1.5px;">Zero & Company</h6>
                         </div>
 
                         <!-- Welcome Message -->
-                        <h3 class="mb-3 fw-bold text-dark">Benvenuto! 👋</h3>
-                        <p class="text-muted mb-4 lh-lg">
-                            Registrati al nostro <strong>programma fedeltà</strong> inserendo la tua email.<br/>
-                            Riceverai un link per completare la registrazione e ottenere la tua Suns Fidelity Card!
+                        <h1 class="mb-2 fw-bold h2 text-dark">Benvenuto!</h1>
+                        <p class="text-muted mb-4 px-2 px-md-3" style="line-height: 1.6; font-size: 0.95rem;">
+                            Entra nel mondo <strong>Suns</strong>. Registrati per ottenere la tua Card digitale, sconti e vantaggi esclusivi.
                         </p>
 
                         <!-- Registration Form -->
-                        <div class="mb-4">
-                            <input @bind="emailRegistrazione" 
-                                   @bind:event="oninput"
-                                   type="email"
-                                   class="form-control form-control-lg text-center" 
-                                   placeholder="La tua email..."
-                                   @onkeypress="@(async e => { if (e.Key == "Enter") await InviaRegistrazione(); })" />
-                            <small class="text-muted">
-                                Es: tuaemail@example.com
-                            </small>
+                        <div class="mb-3 text-start">
+                            <div class="form-group">
+                                <label class="form-label-modern ms-1 mb-2 small fw-medium">La tua Email</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-end-0 rounded-start-3 ps-3">
+                                        <i class="bi bi-envelope text-muted"></i>
+                                    </span>
+                                    <input @bind="emailRegistrazione"
+                                           @bind:event="oninput"
+                                           type="email"
+                                           class="form-control form-control-modern border-start-0 rounded-end-3"
+                                           placeholder="nome@esempio.com"
+                                           style="box-shadow: none; padding: 0.75rem 1rem;"
+                                           @onkeypress="@(async e => { if (e.Key == "Enter") await InviaRegistrazione(); })" />
+                                </div>
+                            </div>
                         </div>
 
-                        @if (!string.IsNullOrEmpty(messaggioRegistrazione))
-                        {
-                            <div class="alert @(registrazioneSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show">
-                                <i class="bi bi-@(registrazioneSuccess ? "check-circle" : "exclamation-triangle")"></i>
-                                @messaggioRegistrazione
-                                <button type="button" class="btn-close" @onclick="@(() => messaggioRegistrazione = "")"></button>
-                            </div>
-                        }
-
-                        <button class="btn btn-custom-welcome btn-lg w-100 mb-3" @onclick="InviaRegistrazione" disabled="@isInvio">
+                        <button class="btn btn-registration btn-lg w-100 mb-4 py-3 fw-bold shadow-sm" @onclick="InviaRegistrazione" disabled="@isInvio">
                             @if (isInvio)
                             {
                                 <span class="spinner-border spinner-border-sm me-2"></span>
+                                <span>Invio in corso...</span>
                             }
-                            <i class="bi bi-envelope me-2"></i>Ricevi Link di Registrazione
+                            else
+                            {
+                                <span><i class="bi bi-magic me-2"></i> Ricevi Link di Accesso</span>
+                            }
                         </button>
 
                         <!-- Benefits -->
-                        <div class="benefits-section">
-                            <h5 class="mb-3">✨ Vantaggi della Card</h5>
-                            <div class="row text-start">
+                        <div class="mt-4 pt-3 border-top">
+                            <h6 class="mb-3 text-uppercase text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1.2px;">✨ I tuoi vantaggi esclusivi</h6>
+                            <div class="row text-start g-2 g-md-3">
                                 <div class="col-6">
-                                    <ul class="list-unstyled small">
-                                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Punti ad ogni acquisto</li>
-                                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Sconti esclusivi</li>
-                                    </ul>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success bg-opacity-10 p-2 me-2 flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-star-fill" style="font-size: 0.85rem; color: var(--bs-success);"></i>
+                                        </div>
+                                        <span class="small fw-medium">Punti acquisto</span>
+                                    </div>
                                 </div>
                                 <div class="col-6">
-                                    <ul class="list-unstyled small">
-                                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Premi fedeltà</li>
-                                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Promozioni speciali</li>
-                                    </ul>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success bg-opacity-10 p-2 me-2 flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-gift-fill" style="font-size: 0.85rem; color: var(--bs-success);"></i>
+                                        </div>
+                                        <span class="small fw-medium">Premi fedeltà</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success bg-opacity-10 p-2 me-2 flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-tag-fill" style="font-size: 0.85rem; color: var(--bs-success);"></i>
+                                        </div>
+                                        <span class="small fw-medium">Sconti %</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success bg-opacity-10 p-2 me-2 flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-patch-check-fill" style="font-size: 0.85rem; color: var(--bs-success);"></i>
+                                        </div>
+                                        <span class="small fw-medium">Promo VIP</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -82,16 +120,19 @@
                 </div>
 
                 <!-- Store Info Footer -->
-                <div class="text-center mt-4">
-                    <p class="text-white small mb-3">
-                        @if (!string.IsNullOrEmpty(puntoVenditaNome))
-                        {
-                            <span><i class="bi bi-geo-alt-fill me-1"></i>@puntoVenditaNome (@puntoVenditaCodice)</span>
-                        }
-                    </p>
-                    <div class="d-flex gap-2 justify-content-center">
-                        <button class="btn btn-sm btn-outline-light" @onclick="Logout">
-                            <i class="bi bi-box-arrow-right me-1"></i>Esci (Operatore)
+                <div class="text-center mt-3 fade-in-up delay-200">
+                    @if (!string.IsNullOrEmpty(puntoVenditaNome))
+                    {
+                        <div class="d-inline-block bg-white bg-opacity-90 px-3 py-2 rounded-pill shadow-sm mb-2">
+                            <small class="text-muted fw-bold" style="font-size: 0.8rem;">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> @puntoVenditaNome (@puntoVenditaCodice)
+                            </small>
+                        </div>
+                    }
+
+                    <div>
+                        <button class="btn btn-sm text-white text-opacity-75 border-0" @onclick="Logout" style="background: transparent;">
+                            <small><i class="bi bi-box-arrow-right me-1"></i>Logout Operatore</small>
                         </button>
                     </div>
                 </div>
@@ -104,20 +145,23 @@
 
 @code {
     [SupplyParameterFromQuery(Name = "store")] public string Store { get; set; } = "NE001";
-    
+
     private string emailRegistrazione = "";
-    private string messaggioRegistrazione = "";
-    private bool registrazioneSuccess = false;
     private bool isInvio = false;
     private string puntoVenditaNome = "";
     private string puntoVenditaCodice = "";
+
+    // Toast State
+    private string? ToastMessage { get; set; }
+    private bool IsToastError { get; set; }
+    private bool IsToastVisible { get; set; }
 
     public static CustomSettings? CustomSettings { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
         puntoVenditaCodice = Store;
-        puntoVenditaNome = "Punto Vendita"; 
+        puntoVenditaNome = "Punto Vendita";
         await base.OnInitializedAsync();
     }
 
@@ -125,83 +169,95 @@
     {
         if (first)
         {
-             try 
-             {
+            try
+            {
                 var manifestData = await JS.InvokeAsync<Dictionary<string, JsonElement>>("manifestInterop.getManifest");
-                if (manifestData != null && manifestData.ContainsKey("custom_settings")) 
+                if (manifestData != null && manifestData.ContainsKey("custom_settings"))
                 {
                     CustomSettings = JsonSerializer.Deserialize<CustomSettings>(manifestData["custom_settings"]);
                 }
-             }
-             catch (Exception)
-             {
-                 // Ignore if manifest fails locally
-             }
+            }
+            catch (Exception)
+            {
+                // Ignore if manifest fails locally
+            }
         }
+    }
+
+    private async void ShowToast(string message, bool isError)
+    {
+        if (string.IsNullOrWhiteSpace(message)) return;
+
+        ToastMessage = message;
+        IsToastError = isError;
+        IsToastVisible = true;
+        StateHasChanged();
+
+        await Task.Delay(5000); // 5 seconds auto-dismiss
+
+        IsToastVisible = false;
+        StateHasChanged();
     }
 
     private async Task InviaRegistrazione()
     {
         if (string.IsNullOrWhiteSpace(emailRegistrazione))
         {
-            messaggioRegistrazione = "Inserisci un'email valida.";
-            registrazioneSuccess = false;
+            ShowToast("Inserisci un'email valida.", true);
+            return;
+        }
+
+        if (!new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(emailRegistrazione))
+        {
+            ShowToast("Il formato dell'email non è corretto.", true);
             return;
         }
 
         isInvio = true;
-        messaggioRegistrazione = "";
         StateHasChanged();
-        
+
         try
         {
-             var endpoint = CustomSettings?.Endpoint ?? "";
+            var endpoint = CustomSettings?.Endpoint ?? "";
+            var currentStore = string.IsNullOrWhiteSpace(Store) ? "NE001" : Store;
+            var validationUrl = $"{endpoint}/api/FidelityCard/EmailValidation?email={Uri.EscapeDataString(emailRegistrazione)}&store={Uri.EscapeDataString(currentStore)}";
+            var response = await Http.GetAsync(validationUrl);
 
-             // Rimuovo il check preventivo, fa tutto EmailValidation ora
-             var currentStore = string.IsNullOrWhiteSpace(Store) ? "NE001" : Store;
-             var validationUrl = $"{endpoint}/api/FidelityCard/EmailValidation?email={Uri.EscapeDataString(emailRegistrazione)}&store={Uri.EscapeDataString(currentStore)}";
-             var response = await Http.GetAsync(validationUrl);
-             
-             if (response.IsSuccessStatusCode)
-             {
-                 var result = await response.Content.ReadFromJsonAsync<JsonElement>();
-                 bool userExists = false;
-                 
-                 try 
-                 {
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+                bool userExists = false;
+
+                try
+                {
                     userExists = result.GetProperty("userExists").GetBoolean();
-                 } 
-                 catch {}
+                }
+                catch { }
 
-                 if (userExists)
-                 {
-                     messaggioRegistrazione = "Questa mail è già registrata. Per favore controlla la tua mail per entrare nel tuo profilo utente.";
-                     registrazioneSuccess = true; // È comunque un successo (email inviata) o false? Utente vuole feedback positivo ma messaggio specifico. Mettiamo warning style maybe? Ma user dice "feedback". 
-                     // Lascio success = true così è verde (o posso metterlo false per rosso, ma verde è meglio per confermare invio mail).
-                     // Utente ha detto "impedisce la mail invece di dare feedback". Quindi ora mail parte.
-                 }
-                 else
-                 {
-                     messaggioRegistrazione = "Link di registrazione inviato! Controlla la tua email.";
-                     registrazioneSuccess = true;
-                 }
-                 
-                 emailRegistrazione = ""; 
-             }
-             else 
-             {
-                 messaggioRegistrazione = "Errore durante la richiesta. Riprova più tardi.";
-                 registrazioneSuccess = false;
-             }
+                if (userExists)
+                {
+                    ShowToast("Questa mail è già registrata. Controlla la tua posta per accedere al profilo.", false);
+                }
+                else
+                {
+                    ShowToast("Link di registrazione inviato! Controlla la tua email.", false);
+                }
+
+                emailRegistrazione = "";
+            }
+            else
+            {
+                ShowToast("Errore durante la richiesta. Riprova più tardi.", true);
+            }
         }
         catch (Exception)
         {
-            messaggioRegistrazione = "Errore di connessione o servizio non disponibile.";
-            registrazioneSuccess = false;
+            ShowToast("Errore di connessione o servizio non disponibile.", true);
         }
         finally
         {
             isInvio = false;
+            StateHasChanged();
         }
     }
 

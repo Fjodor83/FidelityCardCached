@@ -1055,3 +1055,21 @@ body {
 .btn-registration:active::after {
     animation: ripple 0.6s ease-out;
 }
+
+/* ============================================
+   RESPONSIVE TOASTS
+   ============================================ */
+@media (max-width: 576px) {
+    .toast-container-custom {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    .toast-custom {
+        min-width: auto;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
