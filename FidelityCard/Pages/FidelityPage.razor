@@ -159,7 +159,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-12">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-1">
                                                 <label for="Indirizzo" class="form-label-modern">Indirizzo</label>
                                                 <InputText id="Indirizzo" @bind-Value="Fidelity.Indirizzo" class="form-control form-control-modern" placeholder="Via/Piazza, Civico" />
@@ -167,28 +167,28 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-5">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-1">
                                                 <label for="Localita" class="form-label-modern">Località</label>
                                                 <InputText id="Localita" @bind-Value="Fidelity.Localita" class="form-control form-control-modern" placeholder="Comune" />
                                                 <ValidationMessage For="@(() => Fidelity.Localita)" class="text-danger small ms-1" />
                                             </div>
                                         </div>
-                                         <div class="col-md-4">
+                                         <div class="col-md-6">
                                             <div class="form-group mb-1">
                                                 <label for="Provincia" class="form-label-modern">Provincia</label>
                                                 <InputText id="Provincia" @bind-Value="Fidelity.Provincia" class="form-control form-control-modern" placeholder="Sigla (es. BA)" style="text-transform: uppercase;" @onblur="() => Fidelity.Provincia = Fidelity.Provincia?.ToUpper()" maxlength="2" />
                                                 <ValidationMessage For="@(() => Fidelity.Provincia)" class="text-danger small ms-1" />
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-1">
                                                 <label for="Cap" class="form-label-modern">CAP</label>
                                                 <InputText id="Cap" @bind-Value="Fidelity.Cap" class="form-control form-control-modern" placeholder="CAP" maxlength="5" />
                                                  <ValidationMessage For="@(() => Fidelity.Cap)" class="text-danger small ms-1" />
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-1">
                                                 <label for="Nazione" class="form-label-modern">Nazione</label>
                                                 <InputText id="Nazione" @bind-Value="Fidelity.Nazione" class="form-control form-control-modern" placeholder="Nazione" maxlength="2" />
