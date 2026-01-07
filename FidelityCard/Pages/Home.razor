@@ -21,13 +21,13 @@
     </div>
 </div>
 
-<div class="min-vh-100 d-flex align-items-center py-4" style="background: var(--primary-gradient);">
+<div class="home-bg d-flex align-items-center py-4">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6 col-xxl-5">
 
                 <!-- Main Registration Card -->
-                <div class="card border-0 shadow-lg fade-in-up" style="border-radius: 24px; overflow: hidden;">
+                <div class="card home-card border-0 shadow-lg fade-in-up overflow-hidden">
                     <div class="card-body p-4 p-md-5 text-center bg-white position-relative">
 
                         <!-- Decorative top accent -->
@@ -125,7 +125,7 @@
                     {
                         <div class="d-inline-block bg-white bg-opacity-90 px-3 py-2 rounded-pill shadow-sm mb-2">
                             <small class="text-muted fw-bold" style="font-size: 0.8rem;">
-                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> @puntoVenditaNome (@puntoVenditaCodice)
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> @puntoVenditaNome (@Store)
                             </small>
                         </div>
                     }
@@ -148,8 +148,7 @@
 
     private string emailRegistrazione = "";
     private bool isInvio = false;
-    private string puntoVenditaNome = "";
-    private string puntoVenditaCodice = "";
+    private string puntoVenditaNome = "Punto Vendita";
 
     // Toast State
     private string? ToastMessage { get; set; }
@@ -157,13 +156,6 @@
     private bool IsToastVisible { get; set; }
 
     public static CustomSettings? CustomSettings { get; set; } = null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        puntoVenditaCodice = Store;
-        puntoVenditaNome = "Punto Vendita";
-        await base.OnInitializedAsync();
-    }
 
     protected override async Task OnAfterRenderAsync(bool first)
     {
