@@ -129,7 +129,7 @@
                                                     <i class="bi bi-calendar-event input-icon"></i>
                                                     <input id="DataNascita" 
                                                            type="text" 
-                                                           class="form-control form-control-modern" 
+                                                           class="@($"form-control form-control-modern {editContext?.FieldCssClass(FieldIdentifier.Create(() => Fidelity.DataNascita))}")" 
                                                            value="@(Fidelity.DataNascita?.ToString("dd/MM/yyyy"))"
                                                            @onchange="HandleDataNascitaChange"
                                                            placeholder="dd/MM/yyyy" />
@@ -142,7 +142,7 @@
                                                 <label for="Sesso" class="form-label-modern">Sesso</label>
                                                 <div class="input-wrapper">
                                                     <i class="bi bi-gender-ambiguous input-icon"></i>
-                                                    <select id="Sesso" class="form-select form-control-modern" @onchange="HandleSessoChange" value="@Fidelity.Sesso" style="cursor: pointer;">
+                                                    <select id="Sesso" class="@($"form-select form-control-modern {editContext?.FieldCssClass(FieldIdentifier.Create(() => Fidelity.Sesso))}")" @onchange="HandleSessoChange" value="@Fidelity.Sesso" style="cursor: pointer;">
                                                         <option value="" disabled selected>Seleziona...</option>
                                                         @foreach (var item in Helpers.SessoType)
                                                         {
