@@ -122,7 +122,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-6 col-md-6">
                                             <div class="form-group mb-1">
                                                 <label for="DataNascita" class="form-label-modern">Data di nascita</label>
                                                 <div class="input-wrapper">
@@ -137,7 +137,7 @@
                                                 <ValidationMessage For="@(() => Fidelity.DataNascita)" class="text-danger small ms-1" />
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-6 col-md-6">
                                             <div class="form-group mb-1">
                                                 <label for="Sesso" class="form-label-modern">Sesso</label>
                                                 <div class="input-wrapper">
@@ -305,7 +305,6 @@
 
             var actionurl = $"{CustomSettings?.Endpoint ?? string.Empty}/api/FidelityCard/EmailConfirmation?token={Token}";
 
-            // Show loading during token check? Maybe not needed as it's very fast, but good for consistency
             IsLoading = true;
             StateHasChanged();
 
@@ -317,7 +316,6 @@
                     string[] param = fileContent.Split("\r\n");
                     Fidelity.Email = param[1];
                     Fidelity.Store = param[0];
-
                 }
                 else
                 {
@@ -338,7 +336,8 @@
 
     private void HandleDataNascitaChange(ChangeEventArgs e)
     {
-        if (DateTime.TryParseExact(e.Value?.ToString(), "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var result))
+        string[] formats = { "dd/MM/yyyy", "yyyy-MM-dd" };
+        if (DateTime.TryParseExact(e.Value?.ToString(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var result))
         {
             Fidelity.DataNascita = result;
         }
@@ -373,7 +372,7 @@
 
         IsToastVisible = false;
         StateHasChanged();
-    }
+            }
 
     private async Task OnHandleSubmit()
     {
