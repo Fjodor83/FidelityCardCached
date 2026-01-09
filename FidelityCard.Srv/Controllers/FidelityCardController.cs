@@ -154,6 +154,9 @@ public class FidelityCardController(FidelityCardDbContext context,
             return BadRequest();
         }
 
+        // Normalizzo l'email prima di salvare
+        fidelity.Email = fidelity.Email?.Trim().ToLowerInvariant() ?? "";
+
         _context.Fidelity.Add(fidelity);
         try
         {
