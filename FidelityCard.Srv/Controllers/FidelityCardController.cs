@@ -1,9 +1,7 @@
 using FidelityCard.Lib.Models;
 using FidelityCard.Lib.Services;
-using FidelityCard.Srv.Data;
 using FidelityCard.Srv.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 
@@ -12,7 +10,6 @@ namespace FidelityCard.Srv.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class FidelityCardController(
-        FidelityCardDbContext context,
         ILogger<FidelityCardController> logger,
         IOptions<EmailSettings> emailSettings,
         IConfiguration config,
@@ -23,7 +20,6 @@ public class FidelityCardController(
         IEmailCacheService emailCacheService,
         ISedeApiService sedeApiService) : ControllerBase
 {
-    private readonly FidelityCardDbContext _context = context;
     private readonly ILogger<FidelityCardController> _logger = logger;
     private readonly IOptions<EmailSettings> _emailSettings = emailSettings;
     private readonly IConfiguration _config = config;
@@ -35,7 +31,7 @@ public class FidelityCardController(
     private readonly ISedeApiService _sedeApiService = sedeApiService;
 
     // GET: api/FidelityCard/EmailValidation
-    // FLUSSO SENZA USARE TABELLA FIDELITY LOCALE:
+    // FLUSSO SENZA DATABASE LOCALE:
     // 1. Verifica in CACHE se l'email esiste e ha CdFidelity
     // 2. Se non in cache o senza CdFidelity -> Chiama API SEDE (NEFidelity)
     // 3. Se trovato in sede -> Salva in cache e invia link profilo
@@ -81,9 +77,6 @@ public class FidelityCardController(
             _emailCacheService.AddEmail(normalizedEmail, store ?? sedeUser.Store ?? "NE001");
             _emailCacheService.UpdateWithCdFidelity(normalizedEmail, sedeUser.CdFidelity);
             
-            // Aggiorno la cache con i dati completi dell'utente
-            UpdateCacheWithUserData(normalizedEmail, sedeUser);
-            
             var profileToken = _tokenService.GenerateProfileToken(normalizedEmail, store ?? sedeUser.Store ?? "NE001", sedeUser.CdFidelity);
             var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/profilo?token={profileToken}";
             await _emailService.InviaEmailAccessoProfiloAsync(normalizedEmail, sedeUser.Nome ?? "Cliente", url);
@@ -115,7 +108,7 @@ public class FidelityCardController(
     }
 
     // GET: api/FidelityCard/Profile
-    // Recupera i dati dell'utente dalla SEDE (NEFidelity), non dalla tabella locale
+    // Recupera i dati dell'utente dalla SEDE (NEFidelity)
     [HttpGet("Profile")]
     public async Task<IActionResult> GetProfile(string token)
     {
@@ -140,9 +133,6 @@ public class FidelityCardController(
 
         SedeUserInfo? userInfo = null;
 
-        // Prima provo a recuperare dalla cache (se ho già i dati completi)
-        var cachedInfo = _emailCacheService.GetEmailInfo(email);
-        
         // Se ho il CdFidelity, cerco per quello nella SEDE
         if (!string.IsNullOrEmpty(cdFidelity))
         {
@@ -189,7 +179,7 @@ public class FidelityCardController(
 
     // GET: api/FidelityCard/QRCode/{code}
     [HttpGet("QRCode/{code}")]
-    public async Task<IActionResult> GetQrCode(string code)
+    public IActionResult GetQrCode(string code)
     {
         if (string.IsNullOrEmpty(code)) return BadRequest();
 
@@ -202,8 +192,8 @@ public class FidelityCardController(
     }
 
     // POST: api/FidelityCard
-    // Questo endpoint salva nella tabella locale Fidelity E aggiorna la cache
-    // La registrazione principale avviene tramite API sede nel frontend
+    // NON salva più nel database locale!
+    // Aggiorna solo la CACHE e invia email di benvenuto con card digitale
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Fidelity fidelity)
     {
@@ -212,45 +202,46 @@ public class FidelityCardController(
             return BadRequest("Dati non validi");
         }
 
-        fidelity.Email = fidelity.Email?.Trim().ToLowerInvariant() ?? "";
+        var normalizedEmail = fidelity.Email?.Trim().ToLowerInvariant() ?? "";
+        
+        if (string.IsNullOrEmpty(normalizedEmail) || string.IsNullOrEmpty(fidelity.CdFidelity))
+        {
+            return BadRequest("Email e CdFidelity sono richiesti");
+        }
 
-        _context.Fidelity.Add(fidelity);
+        _logger.LogInformation("Create: Aggiornamento cache e invio email per {Email}, CdFidelity={CdFidelity}", 
+            normalizedEmail, fidelity.CdFidelity);
+
+        // Aggiorno la cache con il CdFidelity
+        _emailCacheService.AddEmail(normalizedEmail, fidelity.Store ?? "NE001");
+        _emailCacheService.UpdateWithCdFidelity(normalizedEmail, fidelity.CdFidelity);
+        
+        // Generazione Card e Invio Email di benvenuto
         try
         {
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Utente salvato nel database locale: {Email}, CdFidelity: {CdFidelity}", 
-                fidelity.Email, fidelity.CdFidelity);
+            var cardBytes = await _cardGenerator.GeneraCardDigitaleAsync(fidelity, fidelity.Store);
+            var emailResult = await _emailService.InviaEmailBenvenutoAsync(
+                normalizedEmail, 
+                fidelity.Nome ?? "Cliente", 
+                fidelity.CdFidelity, 
+                cardBytes);
             
-            // Aggiorno la cache con il CdFidelity
-            _emailCacheService.UpdateWithCdFidelity(fidelity.Email, fidelity.CdFidelity);
-            
-            // Generazione Card e Invio Email
-            try
+            if (emailResult)
             {
-                var cardBytes = await _cardGenerator.GeneraCardDigitaleAsync(fidelity, fidelity.Store);
-                var emailResult = await _emailService.InviaEmailBenvenutoAsync(
-                    fidelity.Email ?? "", 
-                    fidelity.Nome ?? "Cliente", 
-                    fidelity.CdFidelity ?? "", 
-                    cardBytes);
-                
-                if (emailResult)
-                {
-                    _logger.LogInformation("Email di benvenuto inviata a {Email}", fidelity.Email);
-                }
+                _logger.LogInformation("Email di benvenuto inviata con successo a {Email}", normalizedEmail);
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "Errore durante generazione card o invio email");
+                _logger.LogWarning("Invio email di benvenuto fallito per {Email}", normalizedEmail);
             }
-
-            return Ok(fidelity);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Errore durante il salvataggio dell'utente");
-            return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
+            _logger.LogError(ex, "Errore durante generazione card o invio email per {Email}", normalizedEmail);
+            // Non blocchiamo - la registrazione nella sede è già avvenuta
         }
+
+        return Ok(fidelity);
     }
 
     // GET: api/FidelityCard/CacheStatus
@@ -260,7 +251,7 @@ public class FidelityCardController(
         return Ok(new 
         { 
             totalEmailsInCache = _emailCacheService.Count,
-            message = "Cache attiva - Verifica email tramite cache + API Sede (NEFidelity)"
+            message = "Cache attiva - Nessun database locale, solo cache + API Sede (NEFidelity)"
         });
     }
 
@@ -273,16 +264,5 @@ public class FidelityCardController(
 
         _emailCacheService.RemoveEmail(email);
         return Ok(new { message = $"Email '{email}' rimossa dalla cache", currentCount = _emailCacheService.Count });
-    }
-
-    // Helper per aggiornare la cache con i dati completi dell'utente dalla sede
-    private void UpdateCacheWithUserData(string email, SedeUserInfo userInfo)
-    {
-        // Per ora salviamo solo il CdFidelity
-        // In futuro potremmo estendere EmailCacheEntry per memorizzare più dati
-        if (!string.IsNullOrEmpty(userInfo.CdFidelity))
-        {
-            _emailCacheService.UpdateWithCdFidelity(email, userInfo.CdFidelity);
-        }
     }
 }
