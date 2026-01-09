@@ -19,14 +19,16 @@ namespace FidelityCard.Lib.Attributes
 
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is DateTime date)
+            if (value is DateTime dateValue)
             {
-                if (date < _min || date > _max)
+                if (dateValue < _min || dateValue > _max)
                 {
-                    return new ValidationResult($"La data deve essere compresa tra {_min:dd/MM/yyyy} e {_max:dd/MM/yyyy}");
+                    return new ValidationResult($"The field {validationContext.DisplayName} must be between {_min:d} and {_max:d}.");
                 }
+                return ValidationResult.Success!;
             }
-            return ValidationResult.Success;
+            return new ValidationResult($"The field {validationContext.DisplayName} is not a valid date.");
+
         }
     }
 
