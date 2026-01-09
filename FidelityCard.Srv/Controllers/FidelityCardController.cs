@@ -168,5 +168,29 @@ public class FidelityCardController(FidelityCardDbContext context,
         }
     }
 
+    // GET: api/FidelityCard/CacheStatus - Endpoint di debug per visualizzare lo stato della cache
+    [HttpGet("[action]")]
+    public IActionResult CacheStatus()
+    {
+        return Ok(new 
+        { 
+            totalEmailsInCache = _emailCacheService.Count,
+            message = "Cache attiva - Le email vengono memorizzate solo durante il processo di verifica"
+        });
+    }
+
+    // DELETE: api/FidelityCard/ClearEmailFromCache - Rimuove un'email dalla cache (opzionale)
+    [HttpDelete("ClearEmailFromCache")]
+    public IActionResult ClearEmailFromCache(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return BadRequest("Email richiesta");
+
+        _emailCacheService.RemoveEmail(email);
+        _logger.LogInformation("Email '{Email}' rimossa dalla cache tramite API", email);
+        
+        return Ok(new { message = $"Email '{email}' rimossa dalla cache", currentCount = _emailCacheService.Count });
+    }
+
 }
 
