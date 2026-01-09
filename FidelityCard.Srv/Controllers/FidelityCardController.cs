@@ -190,6 +190,10 @@ public class FidelityCardController(FidelityCardDbContext context,
             await _context.SaveChangesAsync();
             _logger.LogInformation("Utente salvato nel database: {Email}, CdFidelity: {CdFidelity}", fidelity.Email, fidelity.CdFidelity);
             
+            // IMPORTANTE: Aggiorno la cache con il CdFidelity per identificare univocamente l'utente
+            _emailCacheService.UpdateWithCdFidelity(fidelity.Email, fidelity.CdFidelity);
+            _logger.LogInformation("Cache aggiornata con CdFidelity per {Email}", fidelity.Email);
+            
             // Generazione Card e Invio Email
             try
             {
