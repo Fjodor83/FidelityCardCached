@@ -45,31 +45,39 @@ public class FidelityCardController(FidelityCardDbContext context,
     [HttpGet("[action]")]
     public async Task<IActionResult> EmailValidation(string email, string? store)
     {
-        // Verifica se l'utente esiste già usando la CACHE (non più il database)
-        var userExists = _emailCacheService.EmailExists(email);
+        // Normalizzo l'email per consistenza
+        var normalizedEmail = email?.Trim().ToLowerInvariant() ?? "";
+        
+        if (string.IsNullOrEmpty(normalizedEmail))
+        {
+            return BadRequest("Email richiesta");
+        }
 
-        // Genero token usando il servizio
-        var token = _tokenService.GenerateToken(email, store ?? "NE001");
+        // Verifica se l'utente esiste già usando la CACHE (non più il database)
+        var userExists = _emailCacheService.EmailExists(normalizedEmail);
+
+        // Genero token usando il servizio (con email normalizzata)
+        var token = _tokenService.GenerateToken(normalizedEmail, store ?? "NE001");
 
         if (userExists)
         {
             // UTENTE ESISTENTE IN CACHE: Invio link per ACCEDERE AL PROFILO
-            var cachedInfo = _emailCacheService.GetEmailInfo(email);
+            var cachedInfo = _emailCacheService.GetEmailInfo(normalizedEmail);
             var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/profilo?token={token}";
-            await _emailService.InviaEmailAccessoProfiloAsync(email, "Cliente", url);
+            await _emailService.InviaEmailAccessoProfiloAsync(normalizedEmail, "Cliente", url);
             
-            _logger.LogInformation("Email '{Email}' trovata in cache - Inviato link accesso profilo", email);
+            _logger.LogInformation("Email '{Email}' trovata in cache - Inviato link accesso profilo", normalizedEmail);
             return Ok(new { userExists = true });
         }
         else
         {
             // NUOVO UTENTE (non in cache): Aggiungo alla cache e invio link per COMPLETARE REGISTRAZIONE
-            _emailCacheService.AddEmail(email, store ?? "NE001");
+            _emailCacheService.AddEmail(normalizedEmail, store ?? "NE001");
             
             var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/Fidelity-form?token={token}";
-            await _emailService.InviaEmailVerificaAsync(email, "Cliente", token, url, store);
+            await _emailService.InviaEmailVerificaAsync(normalizedEmail, "Cliente", token, url, store);
             
-            _logger.LogInformation("Email '{Email}' aggiunta in cache - Inviato link registrazione (Store: {Store})", email, store ?? "NE001");
+            _logger.LogInformation("Email '{Email}' aggiunta in cache - Inviato link registrazione (Store: {Store})", normalizedEmail, store ?? "NE001");
             return Ok(new { userExists = false });
         }
     }
