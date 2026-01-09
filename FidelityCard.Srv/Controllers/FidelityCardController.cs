@@ -110,7 +110,7 @@ public class FidelityCardController(
         
         var token = _tokenService.GenerateToken(normalizedEmail, store ?? "NE001");
         var registrationUrl = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/Fidelity-form?token={token}";
-        await _emailService.InviaEmailVerificaAsync(normalizedEmail, "Cliente", token, registrationUrl, store);
+        await _emailService.InviaEmailVerificaAsync(normalizedEmail, "Cliente", token, registrationUrl, store ?? "NE001");
         
         return Ok(new { userExists = false });
     }
@@ -282,10 +282,38 @@ public class FidelityCardController(
         return File(qrCodeBytes, "image/png");
     }
 
+    // POST: api/FidelityCard/Register
+    // Nuova procedura: Registra in Sede -> Ottieni CdFidelity -> Cache & Email
+    [HttpPost("Register")]
+    public async Task<IActionResult> Register([FromBody] Fidelity fidelity)
+    {
+        if (fidelity == null) return BadRequest("Dati non validi");
+
+        // 1. Registrazione in Sede
+        var cdFidelity = await _sedeApiService.RegisterUserAsync(fidelity);
+        
+        if (string.IsNullOrEmpty(cdFidelity))
+        {
+            _logger.LogWarning("Register: Fallita registrazione in sede per {Email}", fidelity.Email);
+            return BadRequest("Impossibile registrare l'utente presso la sede centrale o dati non validi.");
+        }
+
+        fidelity.CdFidelity = cdFidelity;
+
+        // 2. Cache e Email
+        return await ProcessRegistrationAsync(fidelity);
+    }
+
     // POST: api/FidelityCard
     // Salva TUTTI i dati dell'utente nella CACHE e invia email di benvenuto
+    // (Mantenuto per retro-compatibilità, ma la logica è spostata in ProcessRegistrationAsync)
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Fidelity fidelity)
+    {
+        return await ProcessRegistrationAsync(fidelity);
+    }
+
+    private async Task<IActionResult> ProcessRegistrationAsync(Fidelity fidelity)
     {
         if (fidelity == null)
         {
@@ -299,7 +327,7 @@ public class FidelityCardController(
             return BadRequest("Email e CdFidelity sono richiesti");
         }
 
-        _logger.LogInformation("Create: Salvataggio in cache per {Email}, CdFidelity={CdFidelity}", 
+        _logger.LogInformation("ProcessRegistration: Salvataggio in cache per {Email}, CdFidelity={CdFidelity}", 
             normalizedEmail, fidelity.CdFidelity);
 
         // Salvo TUTTI i dati dell'utente nella cache
@@ -328,6 +356,7 @@ public class FidelityCardController(
         try
         {
             var cardBytes = await _cardGenerator.GeneraCardDigitaleAsync(fidelity, fidelity.Store);
+            // NOTA: Passiamo CdFidelity esplicitamente
             var emailResult = await _emailService.InviaEmailBenvenutoAsync(
                 normalizedEmail, 
                 fidelity.Nome ?? "Cliente", 

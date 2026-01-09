@@ -77,6 +77,96 @@ public class SedeApiService : ISedeApiService
     }
 
     /// <summary>
+    /// Registra o aggiorna un utente nella tabella NEFidelity della sede
+    /// </summary>
+    public async Task<string?> RegisterUserAsync(Fidelity fidelity)
+    {
+        try
+        {
+            var endpointSede = _config.GetValue<string>("SedeSettings:EndpointSede");
+            var dbNameSede = _config.GetValue<string>("SedeSettings:DbNameSede");
+
+            if (string.IsNullOrEmpty(endpointSede) || string.IsNullOrEmpty(dbNameSede))
+            {
+                _logger.LogWarning("SedeApiService: EndpointSede o DbNameSede non configurati");
+                return null;
+            }
+
+            var request = new RequestSede
+            {
+                Request = new Request
+                {
+                    DbName = dbNameSede,
+                    SpName = "xTSP_API_Put_Fidelity",
+                    CalledFrom = "APP FIDELIT", 
+                    CalledOperator = ""
+                },
+                Parameters = new[]
+                {
+                    new ParamElement { Name = "store", Value = fidelity.Store },
+                    new ParamElement { Name = "tipo", Value = "D" }, // D = Digitale?
+                    new ParamElement { Name = "nome", Value = fidelity.Nome },
+                    new ParamElement { Name = "cognome", Value = fidelity.Cognome },
+                    new ParamElement { Name = "sesso", Value = fidelity.Sesso },
+                    new ParamElement { Name = "data_nascita", Value = fidelity.DataNascita?.ToString("yyyyMMdd") },
+                    new ParamElement { Name = "indirizzo", Value = fidelity.Indirizzo },
+                    new ParamElement { Name = "localita", Value = fidelity.Localita },
+                    new ParamElement { Name = "cap", Value = fidelity.Cap },
+                    new ParamElement { Name = "provincia", Value = fidelity.Provincia },
+                    new ParamElement { Name = "nazione", Value = fidelity.Nazione },
+                    new ParamElement { Name = "cellulare", Value = fidelity.Cellulare },
+                    new ParamElement { Name = "email", Value = fidelity.Email }
+                }
+            };
+
+            _logger.LogInformation("SedeApiService: Registrazione utente {Email} store {Store}", fidelity.Email, fidelity.Store);
+
+            var response = await _httpClient.PostAsJsonAsync(endpointSede, request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("SedeApiService: Risposta non OK dalla sede (Register). StatusCode={StatusCode}", response.StatusCode);
+                return null;
+            }
+
+            var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
+            if (json == null)
+            {
+                _logger.LogWarning("SedeApiService: Risposta JSON nulla dalla sede");
+                return null;
+            }
+
+            // Parse response to find 'codice_fidelity'
+            var jsonRoot = json.RootElement;
+            if (jsonRoot.TryGetProperty("response", out var responseArray))
+            {
+                foreach (var respElement in responseArray.EnumerateArray())
+                {
+                    if (respElement.TryGetProperty("dataset", out var datasetArray))
+                    {
+                        foreach (var dataElement in datasetArray.EnumerateArray())
+                        {
+                            var cdFidelity = GetStringProperty(dataElement, "codice_fidelity");
+                            if (!string.IsNullOrEmpty(cdFidelity))
+                            {
+                                return cdFidelity;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            _logger.LogWarning("SedeApiService: codice_fidelity non trovato nella risposta");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "SedeApiService: Errore durante RegisterUserAsync per {Email}", fidelity.Email);
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Cerca un utente per CdFidelity nella tabella NEFidelity della sede
     /// </summary>
     public async Task<SedeUserInfo?> GetUserByCdFidelityAsync(string cdFidelity)

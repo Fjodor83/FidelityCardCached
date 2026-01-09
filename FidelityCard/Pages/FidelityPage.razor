@@ -386,88 +386,38 @@
 
         try
         {
-            var actionurl = CustomSettings?.EndpointSede;
-            var dbsede = CustomSettings?.DbNameSede;
-            if (string.IsNullOrEmpty(dbsede))
-            {
-                throw new Exception("Il nome del database sede non è stato specificato");
-            }
+            var baseEndpoint = CustomSettings?.Endpoint?.TrimEnd('/') ?? string.Empty;
+            var actionurl = $"{baseEndpoint}/api/FidelityCard/Register";
 
-            var request = new RequestSede()
-            {
-                Request = new()
-                {
-                    DbName = dbsede,
-                    SpName = "xTSP_API_Put_Fidelity",
-                    CalledFrom = "APP FIDELIT"
-                },
-                Parameters = [
-                    new() { Name = "store", Value = Fidelity.Store },
-                    new() { Name = "tipo", Value = "D" },
-                    new() { Name = "nome", Value = Fidelity.Nome },
-                    new() { Name = "cognome", Value = Fidelity.Cognome },
-                    new() { Name = "sesso", Value = Fidelity.Sesso },
-                    new() { Name = "data_nascita", Value = Fidelity.DataNascita?.ToString("yyyyMMdd") },
-                    new() { Name = "indirizzo", Value = Fidelity.Indirizzo },
-                    new() { Name = "localita", Value = Fidelity.Localita },
-                    new() { Name = "cap", Value = Fidelity.Cap },
-                    new() { Name = "provincia", Value = Fidelity.Provincia },
-                    new() { Name = "nazione", Value = Fidelity.Nazione },
-                    new() { Name = "cellulare", Value = Fidelity.Cellulare },
-                    new() { Name = "email", Value = Fidelity.Email }
-                ]
-            };
-            var response = await Http.PostAsJsonAsync(actionurl, request);
+            var response = await Http.PostAsJsonAsync(actionurl, Fidelity);
 
             if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadFromJsonAsync<JsonDocument>();
-                if (json != null)
+                var result = await response.Content.ReadFromJsonAsync<Fidelity>();
+                if (result != null && !string.IsNullOrEmpty(result.CdFidelity))
                 {
-                    var jsonRoot = json.RootElement;
-                    var responseArray = jsonRoot.GetProperty("response").EnumerateArray();
-                    var responseElement = responseArray.First();
-                    var datasetArray = responseElement.GetProperty("dataset").EnumerateArray();
-                    var datasetElement = datasetArray.First();
-                    string? CdFidelity = datasetElement.GetProperty("codice_fidelity").GetString();
-
-                    if (CdFidelity != null)
-                    {
-                        Fidelity.CdFidelity = CdFidelity;
-
-                        // Costruisco correttamente l'URL (non usare Path.Combine per URL!)
-                        var baseEndpoint = CustomSettings?.Endpoint?.TrimEnd('/') ?? string.Empty;
-                        actionurl = $"{baseEndpoint}/api/FidelityCard";
-                        response = await Http.PostAsJsonAsync(actionurl, Fidelity);
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            Success = true;
-                            ShowToast("Registrazione completata con successo!", false);
-                        }
-                        else
-                        {
-                            ShowToast(await response.Content.ReadAsStringAsync(), true);
-                        }
-                    }
-                    else
-                    {
-                        ShowToast("Non è stato possibile ottenere il nuovo codice fidelity dalla sede.", true);
-                    }
+                    Fidelity.CdFidelity = result.CdFidelity;
+                    Success = true;
+                    ShowToast("Registrazione completata con successo!", false);
                 }
                 else
                 {
-                    ShowToast("Non è stato possibile ottenere il nuovo codice fidelity dalla sede.", true);
+                    // Fallback se il json e' vuoto ma 200 OK (improbabile)
+                    Success = true; 
+                    ShowToast("Registrazione completata!", false);
                 }
             }
             else
             {
-                ShowToast("Errore di comunicazione con il server centrale.", true);
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                 // Pulisci il messaggio d'errore se e' troppo tecnico o lungo
+                if (string.IsNullOrEmpty(errorMsg) || errorMsg.Length > 100) errorMsg = "Errore durante la registrazione.";
+                ShowToast(errorMsg, true);
             }
         }
         catch (Exception ex)
         {
-            ShowToast($"Si è verificato un errore: {ex.Message}", true);
+            ShowToast($"Si è verificato un errore di connessione: {ex.Message}", true);
         }
         finally
         {

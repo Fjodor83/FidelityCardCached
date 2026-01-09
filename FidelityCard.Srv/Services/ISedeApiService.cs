@@ -39,4 +39,11 @@ public interface ISedeApiService
     /// <param name="cdFidelity">Codice fidelity da cercare</param>
     /// <returns>Informazioni utente se trovato, null se non trovato</returns>
     Task<SedeUserInfo?> GetUserByCdFidelityAsync(string cdFidelity);
+
+    /// <summary>
+    /// Registra o aggiorna un utente nella tabella NEFidelity della sede
+    /// </summary>
+    /// <param name="fidelity">Dati utente</param>
+    /// <returns>Il codice fidelity generato/aggiornato, o null in caso di errore</returns>
+    Task<string?> RegisterUserAsync(FidelityCard.Lib.Models.Fidelity fidelity);
 }
