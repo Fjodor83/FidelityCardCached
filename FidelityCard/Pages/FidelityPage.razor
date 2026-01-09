@@ -435,7 +435,9 @@
                     {
                         Fidelity.CdFidelity = CdFidelity;
 
-                        actionurl = Path.Combine(CustomSettings?.Endpoint ?? string.Empty, "api/FidelityCard");
+                        // Costruisco correttamente l'URL (non usare Path.Combine per URL!)
+                        var baseEndpoint = CustomSettings?.Endpoint?.TrimEnd('/') ?? string.Empty;
+                        actionurl = $"{baseEndpoint}/api/FidelityCard";
                         response = await Http.PostAsJsonAsync(actionurl, Fidelity);
 
                         if (response.IsSuccessStatusCode)
