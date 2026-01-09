@@ -1,7 +1,5 @@
 using FidelityCard.Lib.Services;
 using FidelityCard.Srv.Services;
-using FidelityCard.Srv.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,11 +17,6 @@ builder.Services.AddCors(options =>
 
 var settings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>() ?? new();
 builder.Services.AddSingleton(Options.Create(settings));
-
-
-// Add services to the container.
-builder.Services.AddDbContext<FidelityCardDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
 
