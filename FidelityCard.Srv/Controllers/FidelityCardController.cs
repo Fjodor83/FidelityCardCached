@@ -115,11 +115,13 @@ public class FidelityCardController(
     [HttpGet("Profile")]
     public async Task<IActionResult> GetProfile(string token)
     {
+        _logger.LogInformation("GetProfile: Richiesta con token={Token}", token);
+        
         string fileContent = await _tokenService.GetTokenDataAsync(token);
 
         if (string.IsNullOrEmpty(fileContent))
         {
-            _logger.LogWarning("GetProfile: Token non valido o scaduto");
+            _logger.LogWarning("GetProfile: Token non valido o scaduto - token ricevuto={Token}", token);
             return NotFound("Token non valido o scaduto");
         }
 
