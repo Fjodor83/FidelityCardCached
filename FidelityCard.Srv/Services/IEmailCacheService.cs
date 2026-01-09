@@ -34,6 +34,13 @@ public interface IEmailCacheService
     EmailCacheEntry? GetEmailInfo(string email);
 
     /// <summary>
+    /// Aggiorna la cache con il CdFidelity dopo la registrazione completata
+    /// </summary>
+    /// <param name="email">Email dell'utente</param>
+    /// <param name="cdFidelity">Codice fidelity assegnato</param>
+    void UpdateWithCdFidelity(string email, string cdFidelity);
+
+    /// <summary>
     /// Ottiene il conteggio totale delle email in cache
     /// </summary>
     int Count { get; }
@@ -46,6 +53,7 @@ public class EmailCacheEntry
 {
     public string Email { get; set; } = string.Empty;
     public string Store { get; set; } = string.Empty;
+    public string? CdFidelity { get; set; } = null;
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
     public bool IsRegistrationComplete { get; set; } = false;
 }
