@@ -92,20 +92,31 @@ public class FidelityCardController(FidelityCardDbContext context,
 
         if (string.IsNullOrEmpty(fileContent))
         {
+             _logger.LogWarning("GetProfile: Token non valido o scaduto - token={Token}", token);
              return NotFound("Token non valido o scaduto");
         }
 
         string[] param = fileContent.Split("\r\n");
-        if (param.Length < 2) return BadRequest("Formato token non valido");
+        if (param.Length < 2) 
+        {
+            _logger.LogWarning("GetProfile: Formato token non valido - contenuto={Content}", fileContent);
+            return BadRequest("Formato token non valido");
+        }
 
-        string email = param[1];
+        string email = param[1].Trim().ToLowerInvariant();
+        _logger.LogInformation("GetProfile: Cercando utente con email={Email}", email);
 
-        var user = await _context.Fidelity.FirstOrDefaultAsync(f => f.Email == email);
+        // Cerco nel database usando confronto case-insensitive
+        var user = await _context.Fidelity.FirstOrDefaultAsync(f => f.Email.ToLower() == email);
+        
         if (user == null)
         {
+             _logger.LogWarning("GetProfile: Utente non trovato per email={Email}", email);
              return NotFound("Utente non trovato");
         }
 
+        _logger.LogInformation("GetProfile: Trovato utente {Nome} {Cognome} con CdFidelity={CdFidelity}", 
+            user.Nome, user.Cognome, user.CdFidelity);
         return Ok(user);
     }
 
