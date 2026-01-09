@@ -123,15 +123,30 @@ public class FidelityCardController(FidelityCardDbContext context,
             return BadRequest("Formato token non valido");
         }
 
+        // Formato token: store\r\nemail\r\n[cdFidelity] (cdFidelity opzionale)
+        string store = param[0];
         string email = param[1].Trim().ToLowerInvariant();
-        _logger.LogInformation("GetProfile: Cercando utente con email={Email}", email);
+        string? cdFidelity = param.Length >= 3 ? param[2].Trim() : null;
 
-        // Cerco nel database usando confronto case-insensitive
-        var user = await _context.Fidelity.FirstOrDefaultAsync(f => f.Email.ToLower() == email);
+        Fidelity? user = null;
+
+        // Se abbiamo il CdFidelity, cerchiamo per quello (più preciso)
+        if (!string.IsNullOrEmpty(cdFidelity))
+        {
+            _logger.LogInformation("GetProfile: Cercando utente con CdFidelity={CdFidelity}", cdFidelity);
+            user = await _context.Fidelity.FirstOrDefaultAsync(f => f.CdFidelity == cdFidelity);
+        }
+        
+        // Fallback: cerca per email se non trovato per CdFidelity
+        if (user == null)
+        {
+            _logger.LogInformation("GetProfile: Cercando utente con email={Email}", email);
+            user = await _context.Fidelity.FirstOrDefaultAsync(f => f.Email.ToLower() == email);
+        }
         
         if (user == null)
         {
-             _logger.LogWarning("GetProfile: Utente non trovato per email={Email}", email);
+             _logger.LogWarning("GetProfile: Utente non trovato per email={Email}, CdFidelity={CdFidelity}", email, cdFidelity);
              return NotFound("Utente non trovato");
         }
 
