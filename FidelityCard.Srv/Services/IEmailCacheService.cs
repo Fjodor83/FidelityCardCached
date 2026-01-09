@@ -9,36 +9,32 @@ public interface IEmailCacheService
     /// <summary>
     /// Verifica se un'email esiste nella cache
     /// </summary>
-    /// <param name="email">Email da verificare</param>
-    /// <returns>True se l'email è presente in cache, False altrimenti</returns>
     bool EmailExists(string email);
 
     /// <summary>
     /// Aggiunge un'email alla cache (quando inizia il processo di verifica)
     /// </summary>
-    /// <param name="email">Email da aggiungere</param>
-    /// <param name="store">Codice negozio associato</param>
     void AddEmail(string email, string store);
 
     /// <summary>
-    /// Rimuove un'email dalla cache (opzionale, per cleanup)
+    /// Rimuove un'email dalla cache
     /// </summary>
-    /// <param name="email">Email da rimuovere</param>
     void RemoveEmail(string email);
 
     /// <summary>
     /// Ottiene le informazioni associate a un'email in cache
     /// </summary>
-    /// <param name="email">Email da cercare</param>
-    /// <returns>Informazioni email o null se non trovata</returns>
     EmailCacheEntry? GetEmailInfo(string email);
 
     /// <summary>
     /// Aggiorna la cache con il CdFidelity dopo la registrazione completata
     /// </summary>
-    /// <param name="email">Email dell'utente</param>
-    /// <param name="cdFidelity">Codice fidelity assegnato</param>
     void UpdateWithCdFidelity(string email, string cdFidelity);
+
+    /// <summary>
+    /// Aggiorna la cache con tutti i dati dell'utente dopo la registrazione
+    /// </summary>
+    void UpdateWithFullUserData(string email, EmailCacheEntry userData);
 
     /// <summary>
     /// Ottiene il conteggio totale delle email in cache
@@ -47,7 +43,7 @@ public interface IEmailCacheService
 }
 
 /// <summary>
-/// Entry della cache per memorizzare info sull'email
+/// Entry della cache per memorizzare tutti i dati dell'utente
 /// </summary>
 public class EmailCacheEntry
 {
@@ -56,4 +52,16 @@ public class EmailCacheEntry
     public string? CdFidelity { get; set; } = null;
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
     public bool IsRegistrationComplete { get; set; } = false;
+    
+    // Dati anagrafici dell'utente
+    public string? Nome { get; set; }
+    public string? Cognome { get; set; }
+    public string? Cellulare { get; set; }
+    public string? Indirizzo { get; set; }
+    public string? Localita { get; set; }
+    public string? Cap { get; set; }
+    public string? Provincia { get; set; }
+    public string? Nazione { get; set; }
+    public string? Sesso { get; set; }
+    public DateTime? DataNascita { get; set; }
 }

@@ -132,6 +132,46 @@ public class EmailCacheService : IEmailCacheService
     }
 
     /// <summary>
+    /// Aggiorna la cache con tutti i dati dell'utente
+    /// </summary>
+    public void UpdateWithFullUserData(string email, EmailCacheEntry userData)
+    {
+        if (string.IsNullOrWhiteSpace(email) || userData == null)
+            return;
+
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        
+        if (_emailCache.TryGetValue(normalizedEmail, out var entry))
+        {
+            // Aggiorna tutti i campi
+            entry.CdFidelity = userData.CdFidelity ?? entry.CdFidelity;
+            entry.Nome = userData.Nome;
+            entry.Cognome = userData.Cognome;
+            entry.Cellulare = userData.Cellulare;
+            entry.Indirizzo = userData.Indirizzo;
+            entry.Localita = userData.Localita;
+            entry.Cap = userData.Cap;
+            entry.Provincia = userData.Provincia;
+            entry.Nazione = userData.Nazione;
+            entry.Sesso = userData.Sesso;
+            entry.DataNascita = userData.DataNascita;
+            entry.Store = userData.Store ?? entry.Store;
+            entry.IsRegistrationComplete = true;
+            
+            _logger.LogInformation("Cache aggiornata con dati completi per '{Email}' - Nome={Nome} {Cognome}, CdFidelity={CdFidelity}", 
+                email, entry.Nome, entry.Cognome, entry.CdFidelity);
+        }
+        else
+        {
+            // Aggiungi nuovo entry con tutti i dati
+            userData.Email = normalizedEmail;
+            userData.IsRegistrationComplete = true;
+            _emailCache.TryAdd(normalizedEmail, userData);
+            _logger.LogInformation("Email '{Email}' aggiunta alla cache con dati completi", email);
+        }
+    }
+
+    /// <summary>
     /// Conteggio totale email in cache
     /// </summary>
     public int Count => _emailCache.Count;
