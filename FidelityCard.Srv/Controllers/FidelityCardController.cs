@@ -19,7 +19,8 @@ public class FidelityCardController(FidelityCardDbContext context,
         IWebHostEnvironment env,
         ICardGeneratorService cardGenerator,
         IEmailService emailService,
-        ITokenService tokenService) : ControllerBase
+        ITokenService tokenService,
+        IEmailCacheService emailCacheService) : ControllerBase
 {
     private readonly FidelityCardDbContext _context = context;
 
@@ -30,6 +31,7 @@ public class FidelityCardController(FidelityCardDbContext context,
     private readonly ICardGeneratorService _cardGenerator = cardGenerator;
     private readonly IEmailService _emailService = emailService;
     private readonly ITokenService _tokenService = tokenService;
+    private readonly IEmailCacheService _emailCacheService = emailCacheService;
 
     // GET: api/FidelityCard
     [HttpGet]
