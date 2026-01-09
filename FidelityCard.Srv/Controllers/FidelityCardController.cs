@@ -57,6 +57,9 @@ public class FidelityCardController(
             
             var profileToken = _tokenService.GenerateProfileToken(normalizedEmail, store ?? cachedInfo.Store, cachedInfo.CdFidelity);
             var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/profilo?token={profileToken}";
+            
+            _logger.LogInformation("EmailValidation: Token generato={Token}, URL={Url}", profileToken, url);
+            
             await _emailService.InviaEmailAccessoProfiloAsync(normalizedEmail, "Cliente", url);
             
             return Ok(new { userExists = true });
