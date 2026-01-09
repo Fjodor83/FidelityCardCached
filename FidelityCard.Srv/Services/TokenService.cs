@@ -27,6 +27,27 @@ public class TokenService : ITokenService
         return token;
     }
 
+    /// <summary>
+    /// Genera un token per il profilo che include anche il CdFidelity
+    /// Formato: store\r\nemail\r\ncdFidelity
+    /// </summary>
+    public string GenerateProfileToken(string email, string store, string cdFidelity)
+    {
+        var token = TokenManager.Generate();
+        var pathName = Path.Combine(_env.ContentRootPath, "Token");
+        
+        if (!Directory.Exists(pathName))
+        {
+            Directory.CreateDirectory(pathName);
+        }
+
+        var fileName = Path.Combine(pathName, token);
+        // Formato: store\r\nemail\r\ncdFidelity
+        File.WriteAllText(fileName, $"{store}\r\n{email}\r\n{cdFidelity}");
+        
+        return token;
+    }
+
     public async Task<string> ValidateTokenAsync(string token)
     {
         // For compatibility with current logic, validation often means just reading it or checking existence.
