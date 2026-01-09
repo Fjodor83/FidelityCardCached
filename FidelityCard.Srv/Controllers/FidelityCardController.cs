@@ -45,27 +45,31 @@ public class FidelityCardController(FidelityCardDbContext context,
     [HttpGet("[action]")]
     public async Task<IActionResult> EmailValidation(string email, string? store)
     {
-        // Verifica se l'utente esiste già
-        var existingUser = await _context.Fidelity.FirstOrDefaultAsync(f => f.Email == email);
+        // Verifica se l'utente esiste già usando la CACHE (non più il database)
+        var userExists = _emailCacheService.EmailExists(email);
 
         // Genero token usando il servizio
         var token = _tokenService.GenerateToken(email, store ?? "NE001");
 
-        if (existingUser != null)
+        if (userExists)
         {
-            // UTENTE ESISTENTE: Invio link per ACEDERE AL PROFILO
+            // UTENTE ESISTENTE IN CACHE: Invio link per ACCEDERE AL PROFILO
+            var cachedInfo = _emailCacheService.GetEmailInfo(email);
             var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/profilo?token={token}";
-            await _emailService.InviaEmailAccessoProfiloAsync(email, existingUser.Nome ?? "Cliente", url);
+            await _emailService.InviaEmailAccessoProfiloAsync(email, "Cliente", url);
             
+            _logger.LogInformation("Email '{Email}' trovata in cache - Inviato link accesso profilo", email);
             return Ok(new { userExists = true });
         }
         else
         {
-            // NUOVO UTENTE: Invio link per COMPLETARE REGISTRAZIONE
-            var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/Fidelity-form?token={token}";
+            // NUOVO UTENTE (non in cache): Aggiungo alla cache e invio link per COMPLETARE REGISTRAZIONE
+            _emailCacheService.AddEmail(email, store ?? "NE001");
             
+            var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/Fidelity-form?token={token}";
             await _emailService.InviaEmailVerificaAsync(email, "Cliente", token, url, store);
             
+            _logger.LogInformation("Email '{Email}' aggiunta in cache - Inviato link registrazione (Store: {Store})", email, store ?? "NE001");
             return Ok(new { userExists = false });
         }
     }
