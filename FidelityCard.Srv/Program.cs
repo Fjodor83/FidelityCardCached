@@ -30,6 +30,9 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ICardGeneratorService, CardGeneratorService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+// Servizio cache email - Singleton per mantenere la cache in memoria durante tutto il ciclo di vita dell'app
+builder.Services.AddSingleton<IEmailCacheService, EmailCacheService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
