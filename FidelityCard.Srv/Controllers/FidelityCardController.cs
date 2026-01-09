@@ -55,25 +55,37 @@ public class FidelityCardController(FidelityCardDbContext context,
 
         // Verifica se l'utente esiste già usando la CACHE (non più il database)
         var userExists = _emailCacheService.EmailExists(normalizedEmail);
+        var cachedInfo = _emailCacheService.GetEmailInfo(normalizedEmail);
 
-        // Genero token usando il servizio (con email normalizzata)
-        var token = _tokenService.GenerateToken(normalizedEmail, store ?? "NE001");
-
-        if (userExists)
+        if (userExists && cachedInfo?.CdFidelity != null)
         {
-            // UTENTE ESISTENTE IN CACHE: Invio link per ACCEDERE AL PROFILO
-            var cachedInfo = _emailCacheService.GetEmailInfo(normalizedEmail);
-            var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/profilo?token={token}";
+            // UTENTE CON REGISTRAZIONE COMPLETATA: Ha già un CdFidelity in cache
+            // Genero token con CdFidelity per il profilo
+            var profileToken = _tokenService.GenerateProfileToken(normalizedEmail, store ?? "NE001", cachedInfo.CdFidelity);
+            var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/profilo?token={profileToken}";
             await _emailService.InviaEmailAccessoProfiloAsync(normalizedEmail, "Cliente", url);
             
-            _logger.LogInformation("Email '{Email}' trovata in cache - Inviato link accesso profilo", normalizedEmail);
+            _logger.LogInformation("Email '{Email}' trovata in cache con CdFidelity={CdFidelity} - Inviato link accesso profilo", 
+                normalizedEmail, cachedInfo.CdFidelity);
             return Ok(new { userExists = true });
+        }
+        else if (userExists)
+        {
+            // UTENTE IN CACHE MA SENZA CdFidelity (registrazione non completata)
+            // Rigenero token per completare registrazione
+            var token = _tokenService.GenerateToken(normalizedEmail, store ?? "NE001");
+            var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/Fidelity-form?token={token}";
+            await _emailService.InviaEmailVerificaAsync(normalizedEmail, "Cliente", token, url, store);
+            
+            _logger.LogInformation("Email '{Email}' in cache senza CdFidelity - Reinviato link registrazione", normalizedEmail);
+            return Ok(new { userExists = false });
         }
         else
         {
             // NUOVO UTENTE (non in cache): Aggiungo alla cache e invio link per COMPLETARE REGISTRAZIONE
             _emailCacheService.AddEmail(normalizedEmail, store ?? "NE001");
             
+            var token = _tokenService.GenerateToken(normalizedEmail, store ?? "NE001");
             var url = $"{Request.Scheme}://{_config.GetValue<string>("ClientHost")}/Fidelity-form?token={token}";
             await _emailService.InviaEmailVerificaAsync(normalizedEmail, "Cliente", token, url, store);
             
