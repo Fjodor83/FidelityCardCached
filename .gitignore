@@ -10,3 +10,7 @@ obj/
 
 # Ignored Folders
 **/Token/
+-e 
+# Environment files
+*.env
+*.env.*
