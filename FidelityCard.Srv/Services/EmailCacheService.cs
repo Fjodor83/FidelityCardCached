@@ -49,6 +49,7 @@ public class EmailCacheService : IEmailCacheService
         {
             Email = normalizedEmail,
             Store = store ?? "NE001",
+            CdFidelity = null,
             AddedAt = DateTime.UtcNow,
             IsRegistrationComplete = false
         };
@@ -99,19 +100,34 @@ public class EmailCacheService : IEmailCacheService
     }
 
     /// <summary>
-    /// Segna un'email come registrazione completata
+    /// Aggiorna la cache con il CdFidelity dopo la registrazione completata
     /// </summary>
-    public void MarkRegistrationComplete(string email)
+    public void UpdateWithCdFidelity(string email, string cdFidelity)
     {
-        if (string.IsNullOrWhiteSpace(email))
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(cdFidelity))
             return;
 
         var normalizedEmail = email.Trim().ToLowerInvariant();
         
         if (_emailCache.TryGetValue(normalizedEmail, out var entry))
         {
+            entry.CdFidelity = cdFidelity;
             entry.IsRegistrationComplete = true;
-            _logger.LogInformation("Email '{Email}' segnata come registrazione completata", email);
+            _logger.LogInformation("Cache aggiornata per '{Email}' con CdFidelity={CdFidelity}", email, cdFidelity);
+        }
+        else
+        {
+            // Se l'email non è in cache (caso raro), la aggiungiamo con il CdFidelity
+            var newEntry = new EmailCacheEntry
+            {
+                Email = normalizedEmail,
+                Store = "NE001",
+                CdFidelity = cdFidelity,
+                AddedAt = DateTime.UtcNow,
+                IsRegistrationComplete = true
+            };
+            _emailCache.TryAdd(normalizedEmail, newEntry);
+            _logger.LogInformation("Email '{Email}' aggiunta alla cache con CdFidelity={CdFidelity}", email, cdFidelity);
         }
     }
 
