@@ -139,16 +139,29 @@ public class FidelityCardController(FidelityCardDbContext context,
         try
         {
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Utente salvato nel database: {Email}, CdFidelity: {CdFidelity}", fidelity.Email, fidelity.CdFidelity);
             
             // Generazione Card e Invio Email
             try
             {
+                _logger.LogInformation("Inizio generazione card digitale per {Email}...", fidelity.Email);
                 var cardBytes = await _cardGenerator.GeneraCardDigitaleAsync(fidelity, fidelity.Store);
-                await _emailService.InviaEmailBenvenutoAsync(fidelity.Email ?? "", fidelity.Nome ?? "Cliente", fidelity.CdFidelity ?? "", cardBytes);
+                _logger.LogInformation("Card generata con successo ({Size} bytes). Invio email benvenuto...", cardBytes?.Length ?? 0);
+                
+                var emailResult = await _emailService.InviaEmailBenvenutoAsync(fidelity.Email ?? "", fidelity.Nome ?? "Cliente", fidelity.CdFidelity ?? "", cardBytes);
+                
+                if (emailResult)
+                {
+                    _logger.LogInformation("Email di benvenuto inviata con successo a {Email}", fidelity.Email);
+                }
+                else
+                {
+                    _logger.LogWarning("Invio email di benvenuto fallito per {Email} - Il servizio ha restituito false", fidelity.Email);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Errore durante generazione card o invio email benvenuto.");
+                _logger.LogError(ex, "Errore durante generazione card o invio email benvenuto per {Email}. Dettaglio: {Message}", fidelity.Email, ex.Message);
                 // Non blocchiamo il ritorno OK, la registrazione è avvenuta
             }
 
