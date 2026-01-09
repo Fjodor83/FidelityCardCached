@@ -33,6 +33,10 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Servizio cache email - Singleton per mantenere la cache in memoria durante tutto il ciclo di vita dell'app
 builder.Services.AddSingleton<IEmailCacheService, EmailCacheService>();
+
+// Servizio API Sede - HttpClient per chiamare l'API della sede centrale
+builder.Services.AddHttpClient<ISedeApiService, SedeApiService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
