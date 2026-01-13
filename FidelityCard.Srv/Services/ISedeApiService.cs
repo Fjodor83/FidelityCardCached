@@ -46,4 +46,11 @@ public interface ISedeApiService
     /// <param name="fidelity">Dati utente</param>
     /// <returns>Il codice fidelity generato/aggiornato, o null in caso di errore</returns>
     Task<string?> RegisterUserAsync(FidelityCard.Lib.Models.Fidelity fidelity);
+
+    /// <summary>
+    /// Recupera tutti gli utenti attivi dalla tabella NEFidelity della sede
+    /// Utilizzato per la sincronizzazione della cache all'avvio
+    /// </summary>
+    /// <returns>Lista di tutti gli utenti attivi</returns>
+    Task<List<SedeUserInfo>> GetAllUsersAsync();
 }

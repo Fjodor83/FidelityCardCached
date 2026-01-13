@@ -172,6 +172,68 @@ public class EmailCacheService : IEmailCacheService
     }
 
     /// <summary>
+    /// Sincronizza la cache caricando tutti gli utenti dalla Sede API
+    /// </summary>
+    public async Task SyncFromSedeAsync(ISedeApiService sedeApiService)
+    {
+        try
+        {
+            _logger.LogInformation("EmailCacheService: Inizio sincronizzazione cache dalla Sede API...");
+            var startTime = DateTime.UtcNow;
+
+            var users = await sedeApiService.GetAllUsersAsync();
+
+            if (users == null || users.Count == 0)
+            {
+                _logger.LogWarning("EmailCacheService: Nessun utente ricevuto dalla Sede API");
+                return;
+            }
+
+            int syncedCount = 0;
+            foreach (var user in users)
+            {
+                if (string.IsNullOrWhiteSpace(user.Email))
+                    continue;
+
+                var normalizedEmail = user.Email.Trim().ToLowerInvariant();
+
+                var cacheEntry = new EmailCacheEntry
+                {
+                    Email = normalizedEmail,
+                    CdFidelity = user.CdFidelity,
+                    Store = user.Store ?? "NE001",
+                    Nome = user.Nome,
+                    Cognome = user.Cognome,
+                    Cellulare = user.Cellulare,
+                    Indirizzo = user.Indirizzo,
+                    Localita = user.Localita,
+                    Cap = user.Cap,
+                    Provincia = user.Provincia,
+                    Nazione = user.Nazione,
+                    Sesso = user.Sesso,
+                    DataNascita = user.DataNascita,
+                    AddedAt = DateTime.UtcNow,
+                    IsRegistrationComplete = true
+                };
+
+                if (_emailCache.TryAdd(normalizedEmail, cacheEntry))
+                {
+                    syncedCount++;
+                }
+            }
+
+            var elapsed = DateTime.UtcNow - startTime;
+            _logger.LogInformation(
+                "EmailCacheService: Sincronizzazione completata. {SyncedCount}/{TotalCount} utenti caricati in cache in {ElapsedMs}ms",
+                syncedCount, users.Count, elapsed.TotalMilliseconds);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "EmailCacheService: Errore durante la sincronizzazione dalla Sede API");
+        }
+    }
+
+    /// <summary>
     /// Conteggio totale email in cache
     /// </summary>
     public int Count => _emailCache.Count;

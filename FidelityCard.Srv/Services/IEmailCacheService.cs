@@ -40,6 +40,12 @@ public interface IEmailCacheService
     /// Ottiene il conteggio totale delle email in cache
     /// </summary>
     int Count { get; }
+
+    /// <summary>
+    /// Sincronizza la cache caricando tutti gli utenti dalla Sede API
+    /// Utilizzato per il warm-up della cache all'avvio dell'applicazione
+    /// </summary>
+    Task SyncFromSedeAsync(ISedeApiService sedeApiService);
 }
 
 /// <summary>

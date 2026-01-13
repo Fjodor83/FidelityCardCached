@@ -370,6 +370,140 @@ public class SedeApiService : ISedeApiService
     }
 
     /// <summary>
+    /// Recupera tutti gli utenti attivi dalla tabella NEFidelity della sede
+    /// Utilizzato per la sincronizzazione della cache all'avvio
+    /// </summary>
+    public async Task<List<SedeUserInfo>> GetAllUsersAsync()
+    {
+        var users = new List<SedeUserInfo>();
+        
+        try
+        {
+            var endpointSede = _config.GetValue<string>("SedeSettings:EndpointSede");
+            var dbNameSede = _config.GetValue<string>("SedeSettings:DbNameSede");
+
+            if (string.IsNullOrEmpty(endpointSede) || string.IsNullOrEmpty(dbNameSede))
+            {
+                _logger.LogWarning("SedeApiService: EndpointSede o DbNameSede non configurati");
+                return users;
+            }
+
+            var request = new RequestSede
+            {
+                Request = new Request
+                {
+                    DbName = dbNameSede,
+                    SpName = "xTSP_API_Get_All_Fidelity",
+                    CalledFrom = "APP FIDELITY - CACHE SYNC",
+                    CalledOperator = ""
+                },
+                Parameters = Array.Empty<ParamElement>()
+            };
+
+            _logger.LogInformation("SedeApiService: Chiamata API sede per recupero di tutti gli utenti attivi");
+
+            var response = await _httpClient.PostAsJsonAsync(endpointSede, request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("SedeApiService: Risposta non OK dalla sede (GetAllUsers). StatusCode={StatusCode}, Content={Content}",
+                    response.StatusCode, errorContent);
+                return users;
+            }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (string.IsNullOrWhiteSpace(responseContent))
+            {
+                _logger.LogWarning("SedeApiService: Risposta vuota dalla sede per GetAllUsers");
+                return users;
+            }
+
+            _logger.LogDebug("SedeApiService: Risposta ricevuta per GetAllUsers");
+
+            var json = JsonDocument.Parse(responseContent);
+            var jsonRoot = json.RootElement;
+            JsonElement datasetArray = default;
+            bool datasetFound = false;
+
+            // Cerca structure {"response": [{"dataset": ...}]}
+            if (jsonRoot.TryGetProperty("response", out var responseArray))
+            {
+                var responseElements = responseArray.EnumerateArray().ToList();
+                if (responseElements.Count > 0)
+                {
+                    var responseElement = responseElements.First();
+                    if (responseElement.TryGetProperty("dataset", out datasetArray))
+                    {
+                        datasetFound = true;
+                    }
+                }
+            }
+
+            // Cerca direttamente {"dataset": ...}
+            if (!datasetFound)
+            {
+                if (jsonRoot.TryGetProperty("dataset", out datasetArray))
+                {
+                    datasetFound = true;
+                }
+            }
+
+            if (!datasetFound)
+            {
+                _logger.LogWarning("SedeApiService: Nessuna proprietà 'dataset' trovata nella risposta GetAllUsers");
+                return users;
+            }
+
+            foreach (var dataElement in datasetArray.EnumerateArray())
+            {
+                var userInfo = new SedeUserInfo
+                {
+                    Found = true,
+                    CdFidelity = GetStringProperty(dataElement, "codice_fidelity"),
+                    Nome = GetStringProperty(dataElement, "nome"),
+                    Cognome = GetStringProperty(dataElement, "cognome"),
+                    Email = GetStringProperty(dataElement, "email"),
+                    Cellulare = GetStringProperty(dataElement, "cellulare"),
+                    Indirizzo = GetStringProperty(dataElement, "indirizzo"),
+                    Localita = GetStringProperty(dataElement, "localita"),
+                    Cap = GetStringProperty(dataElement, "cap"),
+                    Provincia = GetStringProperty(dataElement, "provincia"),
+                    Nazione = GetStringProperty(dataElement, "nazione"),
+                    Sesso = GetStringProperty(dataElement, "sesso"),
+                    Store = GetStringProperty(dataElement, "store") ?? GetStringProperty(dataElement, "cd_ne")
+                };
+
+                // Parse data nascita se presente
+                var dataNascitaStr = GetStringProperty(dataElement, "data_nascita");
+                if (!string.IsNullOrEmpty(dataNascitaStr))
+                {
+                    if (DateTime.TryParse(dataNascitaStr, out var dataNascita))
+                    {
+                        userInfo.DataNascita = dataNascita;
+                    }
+                }
+
+                users.Add(userInfo);
+            }
+
+            _logger.LogInformation("SedeApiService: Recuperati {Count} utenti dalla sede", users.Count);
+            return users;
+        }
+        catch (JsonException jsonEx)
+        {
+            _logger.LogError(jsonEx, "SedeApiService: Errore parsing JSON per GetAllUsers");
+            return users;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "SedeApiService: Errore durante GetAllUsers");
+            return users;
+        }
+    }
+
+    /// <summary>
     /// Parsa la risposta JSON della sede e estrae le informazioni utente
     /// </summary>
     private SedeUserInfo? ParseUserFromResponse(JsonDocument json, string? email = null, string? cdFidelity = null)

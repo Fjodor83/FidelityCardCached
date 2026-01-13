@@ -30,6 +30,9 @@ builder.Services.AddSingleton<IEmailCacheService, EmailCacheService>();
 // Servizio API Sede - HttpClient per chiamare l'API della sede centrale
 builder.Services.AddHttpClient<ISedeApiService, SedeApiService>();
 
+// Hosted Service per sincronizzazione cache all'avvio
+builder.Services.AddHostedService<CacheSyncHostedService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
