@@ -190,8 +190,10 @@ public class SedeApiService : ISedeApiService
             }
 
             // Parse response per trovare 'codice_fidelity'
+            // Parse response per trovare 'codice_fidelity'
             var jsonRoot = json.RootElement;
 
+            // CASO 1: Struttura complessa {"response": [{"dataset": [...]}]}
             if (jsonRoot.TryGetProperty("response", out var responseArray))
             {
                 foreach (var respElement in responseArray.EnumerateArray())
@@ -203,15 +205,29 @@ public class SedeApiService : ISedeApiService
                             var cdFidelity = GetStringProperty(dataElement, "codice_fidelity");
                             if (!string.IsNullOrEmpty(cdFidelity))
                             {
-                                _logger.LogInformation("SedeApiService: Codice fidelity trovato in JSON: {Code}", cdFidelity);
+                                _logger.LogInformation("SedeApiService: Codice fidelity trovato in JSON (response/dataset): {Code}", cdFidelity);
                                 return cdFidelity;
                             }
                         }
                     }
                 }
             }
+            
+            // CASO 2: Struttura standard SQL {"dataset": [...]}
+            if (jsonRoot.TryGetProperty("dataset", out var rootDatasetArray))
+            {
+                foreach (var dataElement in rootDatasetArray.EnumerateArray())
+                {
+                    var cdFidelity = GetStringProperty(dataElement, "codice_fidelity");
+                    if (!string.IsNullOrEmpty(cdFidelity))
+                    {
+                        _logger.LogInformation("SedeApiService: Codice fidelity trovato in JSON (root dataset): {Code}", cdFidelity);
+                        return cdFidelity;
+                    }
+                }
+            }
 
-            // Prova anche a cercare direttamente la proprietà codice_fidelity
+            // CASO 3: Proprietà diretta {"codice_fidelity": "..."}
             if (jsonRoot.TryGetProperty("codice_fidelity", out var codiceProp))
             {
                 var codice = codiceProp.GetString();
@@ -308,25 +324,35 @@ public class SedeApiService : ISedeApiService
         try
         {
             var jsonRoot = json.RootElement;
+            JsonElement datasetArray = default;
+            bool datasetFound = false;
 
-            if (!jsonRoot.TryGetProperty("response", out var responseArray))
+            // Tentativo 1: Cerca structure {"response": [{"dataset": ...}]}
+            if (jsonRoot.TryGetProperty("response", out var responseArray))
             {
-                _logger.LogWarning("SedeApiService: Proprietà 'response' non trovata nella risposta");
-                return null;
+                var responseElements = responseArray.EnumerateArray().ToList();
+                if (responseElements.Count > 0)
+                {
+                    var responseElement = responseElements.First();
+                    if (responseElement.TryGetProperty("dataset", out datasetArray))
+                    {
+                        datasetFound = true;
+                    }
+                }
             }
 
-            var responseElements = responseArray.EnumerateArray().ToList();
-            if (responseElements.Count == 0)
+            // Tentativo 2: Cerca direttamente {"dataset": ...}
+            if (!datasetFound)
             {
-                _logger.LogInformation("SedeApiService: Nessun elemento in 'response'");
-                return null;
+                if (jsonRoot.TryGetProperty("dataset", out datasetArray))
+                {
+                    datasetFound = true;
+                }
             }
 
-            var responseElement = responseElements.First();
-
-            if (!responseElement.TryGetProperty("dataset", out var datasetArray))
+            if (!datasetFound)
             {
-                _logger.LogWarning("SedeApiService: Proprietà 'dataset' non trovata nella risposta");
+                _logger.LogWarning("SedeApiService: Nessuna proprietà 'dataset' trovata nella risposta");
                 return null;
             }
 
