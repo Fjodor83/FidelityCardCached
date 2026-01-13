@@ -283,26 +283,60 @@ public class FidelityCardController(
     }
 
     // POST: api/FidelityCard/Register
-    // Nuova procedura: Registra in Sede -> Ottieni CdFidelity -> Cache & Email
+    // Registra in Sede -> Ottieni CdFidelity -> Cache & Email
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] Fidelity fidelity)
     {
-        if (fidelity == null) return BadRequest("Dati non validi");
+        _logger.LogInformation("=== INIZIO REGISTRAZIONE ===");
+        _logger.LogInformation("Email: {Email}", fidelity.Email);
+        _logger.LogInformation("Store: {Store}", fidelity.Store ?? "NE001");
+        _logger.LogInformation("Nome: {Nome}, Cognome: {Cognome}", fidelity.Nome, fidelity.Cognome);
+        _logger.LogInformation("DataNascita: {DataNascita}", fidelity.DataNascita?.ToString("dd/MM/yyyy") ?? "NULL");
 
-        // 1. Registrazione in Sede
+        if (!ModelState.IsValid)
+        {
+            _logger.LogWarning("ModelState non valido:");
+            foreach (var error in ModelState)
+            {
+                _logger.LogWarning("Campo: {Key}, Errori: {Errors}",
+                    error.Key, string.Join(", ", error.Value?.Errors.Select(e => e.ErrorMessage) ?? []));
+            }
+            return BadRequest(ModelState);
+        }
+
+        fidelity.Email = Normalize(fidelity.Email)?.ToLowerInvariant();
+        fidelity.Store ??= "NE001";
+
+        _logger.LogInformation("Chiamata a RegisterUserAsync per email={Email}", fidelity.Email);
+
         var cdFidelity = await _sedeApiService.RegisterUserAsync(fidelity);
-        
+
+        _logger.LogInformation("RegisterUserAsync completato. CdFidelity ricevuto: {CdFidelity}",
+            cdFidelity ?? "[NULL]");
+
         if (string.IsNullOrEmpty(cdFidelity))
         {
-            _logger.LogWarning("Register: Fallita registrazione in sede per {Email}", fidelity.Email);
-            return BadRequest("Impossibile registrare l'utente presso la sede centrale o dati non validi.");
+            _logger.LogError("ERRORE: CdFidelity è NULL o vuoto dopo RegisterUserAsync");
+            _logger.LogError("Controlla i log di SedeApiService per vedere la risposta API completa");
+            return BadRequest(new
+            {
+                error = "Registrazione fallita presso la sede centrale",
+                details = "Impossibile ottenere il codice fidelity. Verifica i log del server."
+            });
         }
 
         fidelity.CdFidelity = cdFidelity;
 
-        // 2. Cache e Email
-        return await ProcessRegistrationAsync(fidelity);
+        _logger.LogInformation("CdFidelity assegnato: {CdFidelity}. Procedo con ProcessRegistrationAsync", cdFidelity);
+
+        var result = await ProcessRegistrationAsync(fidelity);
+
+        _logger.LogInformation("=== FINE REGISTRAZIONE - Esito: {StatusCode} ===",
+            result is OkObjectResult ? "SUCCESS" : "FAILED");
+
+        return result;
     }
+
 
     // POST: api/FidelityCard
     // Salva TUTTI i dati dell'utente nella CACHE e invia email di benvenuto
@@ -315,70 +349,39 @@ public class FidelityCardController(
 
     private async Task<IActionResult> ProcessRegistrationAsync(Fidelity fidelity)
     {
-        if (fidelity == null)
-        {
-            return BadRequest("Dati non validi");
-        }
-
-        var normalizedEmail = fidelity.Email?.Trim().ToLowerInvariant() ?? "";
-        
-        if (string.IsNullOrEmpty(normalizedEmail) || string.IsNullOrEmpty(fidelity.CdFidelity))
-        {
-            return BadRequest("Email e CdFidelity sono richiesti");
-        }
-
-        _logger.LogInformation("ProcessRegistration: Salvataggio in cache per {Email}, CdFidelity={CdFidelity}", 
-            normalizedEmail, fidelity.CdFidelity);
-
-        // Salvo TUTTI i dati dell'utente nella cache
+        fidelity.Email = Normalize(fidelity.Email)?.ToLowerInvariant();
+        if (string.IsNullOrEmpty(fidelity.Email) ||
+        string.IsNullOrEmpty(fidelity.CdFidelity))
+            return BadRequest("Email e CdFidelity sono obbligatori");
         var cacheEntry = new EmailCacheEntry
         {
-            Email = normalizedEmail,
+            Email = fidelity.Email,
             Store = fidelity.Store ?? "NE001",
             CdFidelity = fidelity.CdFidelity,
-            Nome = fidelity.Nome,
-            Cognome = fidelity.Cognome,
-            Cellulare = fidelity.Cellulare,
-            Indirizzo = fidelity.Indirizzo,
-            Localita = fidelity.Localita,
-            Cap = fidelity.Cap,
-            Provincia = fidelity.Provincia,
-            Nazione = fidelity.Nazione,
-            Sesso = fidelity.Sesso,
+            Nome = Normalize(fidelity.Nome),
+            Cognome = Normalize(fidelity.Cognome),
+            Cellulare = Normalize(fidelity.Cellulare),
+            Indirizzo = Normalize(fidelity.Indirizzo),
+            Localita = Normalize(fidelity.Localita),
+            Cap = Normalize(fidelity.Cap),
+            Provincia = Normalize(fidelity.Provincia),
+            Nazione = Normalize(fidelity.Nazione),
+            Sesso = Normalize(fidelity.Sesso),
             DataNascita = fidelity.DataNascita,
             IsRegistrationComplete = true
         };
-        
-        _emailCacheService.AddEmail(normalizedEmail, fidelity.Store ?? "NE001");
-        _emailCacheService.UpdateWithFullUserData(normalizedEmail, cacheEntry);
-        
-        // Generazione Card e Invio Email di benvenuto
-        try
-        {
-            var cardBytes = await _cardGenerator.GeneraCardDigitaleAsync(fidelity, fidelity.Store);
-            // NOTA: Passiamo CdFidelity esplicitamente
-            var emailResult = await _emailService.InviaEmailBenvenutoAsync(
-                normalizedEmail, 
-                fidelity.Nome ?? "Cliente", 
-                fidelity.CdFidelity, 
-                cardBytes);
-            
-            if (emailResult)
-            {
-                _logger.LogInformation("Email di benvenuto inviata con successo a {Email}", normalizedEmail);
-            }
-            else
-            {
-                _logger.LogWarning("Invio email di benvenuto fallito per {Email}", normalizedEmail);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Errore durante generazione card o invio email per {Email}", normalizedEmail);
-        }
-
+        _emailCacheService.AddEmail(fidelity.Email, cacheEntry.Store);
+        _emailCacheService.UpdateWithFullUserData(fidelity.Email, cacheEntry);
+        var cardBytes = await _cardGenerator.GeneraCardDigitaleAsync(fidelity,
+        fidelity.Store);
+        await _emailService.InviaEmailBenvenutoAsync(
+        fidelity.Email,
+        fidelity.Nome ?? "Cliente",
+        fidelity.CdFidelity,
+        cardBytes);
         return Ok(fidelity);
     }
+
 
     // GET: api/FidelityCard/CacheStatus
     [HttpGet("[action]")]
@@ -400,5 +403,9 @@ public class FidelityCardController(
 
         _emailCacheService.RemoveEmail(email);
         return Ok(new { message = $"Email '{email}' rimossa dalla cache", currentCount = _emailCacheService.Count });
+    }
+    private static string? Normalize(string? input)
+    {
+        return string.IsNullOrWhiteSpace(input) ? null : input.Trim();
     }
 }

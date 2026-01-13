@@ -64,7 +64,6 @@ public class SedeApiService : ISedeApiService
                 return null;
             }
 
-            // Leggi prima come stringa per fare debug
             var responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrWhiteSpace(responseContent))
@@ -92,6 +91,8 @@ public class SedeApiService : ISedeApiService
 
     /// <summary>
     /// Registra o aggiorna un utente nella tabella NEFidelity della sede
+    /// IMPORTANTE: L'API arca_dataexchange passa l'intera richiesta alla SP
+    /// Dobbiamo inviare i dati come JSON serializzato nel parametro "JsonData"
     /// </summary>
     public async Task<string?> RegisterUserAsync(Fidelity fidelity)
     {
@@ -106,6 +107,28 @@ public class SedeApiService : ISedeApiService
                 return null;
             }
 
+            // Crea un oggetto con tutti i dati dell'utente
+            var userData = new
+            {
+                Email = fidelity.Email ?? "",
+                Nome = fidelity.Nome ?? "",
+                Cognome = fidelity.Cognome ?? "",
+                Store = fidelity.Store ?? "NE001",
+                Tipo = "D",
+                Sesso = fidelity.Sesso ?? "",
+                DataNascita = fidelity.DataNascita?.ToString("ddMMyyyy") ?? "",
+                Indirizzo = fidelity.Indirizzo ?? "",
+                Localita = fidelity.Localita ?? "",
+                Cap = fidelity.Cap ?? "",
+                Provincia = fidelity.Provincia ?? "",
+                Nazione = fidelity.Nazione ?? "",
+                Cellulare = fidelity.Cellulare ?? ""
+            };
+
+            // Serializza l'oggetto in JSON
+            var userDataJson = JsonSerializer.Serialize(userData);
+
+            // Crea la request con il JSON come parametro singolo
             var request = new RequestSede
             {
                 Request = new Request
@@ -117,33 +140,27 @@ public class SedeApiService : ISedeApiService
                 },
                 Parameters = new[]
                 {
-                    new ParamElement { Name = "CdNE", Value = fidelity.Store },
-                    new ParamElement { Name = "Tipo", Value = "D" }, // D = Digitale
-                    new ParamElement { Name = "Nome", Value = fidelity.Nome },
-                    new ParamElement { Name = "Cognome", Value = fidelity.Cognome },
-                    new ParamElement { Name = "Sesso", Value = fidelity.Sesso },
-                    new ParamElement { Name = "DataNascita", Value = fidelity.DataNascita?.ToString("ddMMyyyy") },
-                    new ParamElement { Name = "Indirizzo", Value = fidelity.Indirizzo },
-                    new ParamElement { Name = "Localita", Value = fidelity.Localita },
-                    new ParamElement { Name = "CdCap", Value = fidelity.Cap },
-                    new ParamElement { Name = "CdProv", Value = fidelity.Provincia },
-                    new ParamElement { Name = "CdNazioni", Value = fidelity.Nazione },
-                    new ParamElement { Name = "Cellulare", Value = fidelity.Cellulare },
-                    new ParamElement { Name = "Email", Value = fidelity.Email }
-                }
+                new ParamElement { Name = "JsonData", Value = userDataJson }
+            }
             };
 
             _logger.LogInformation("SedeApiService: Registrazione utente {Email} store {Store}, DataNascita={DataNascita}",
                 fidelity.Email, fidelity.Store, fidelity.DataNascita?.ToString("ddMMyyyy") ?? "NULL");
+
+            // Log della request completa per debug
+            var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions { WriteIndented = true });
+            _logger.LogInformation("SedeApiService: Request JSON formato RequestSede:\n{Request}", requestJson);
 
             var response = await _httpClient.PostAsJsonAsync(endpointSede, request);
 
             // Leggi sempre la risposta come stringa per debugging
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("SedeApiService: HTTP Status={Status}, ContentLength={Length}, Content={Content}",
-                response.StatusCode, responseContent?.Length ?? 0,
-                string.IsNullOrWhiteSpace(responseContent) ? "[VUOTO]" : responseContent.Substring(0, Math.Min(200, responseContent.Length)));
+            _logger.LogInformation("SedeApiService: HTTP Status={Status}, ContentLength={Length}",
+                response.StatusCode, responseContent?.Length ?? 0);
+
+            _logger.LogInformation("SedeApiService: Risposta completa: {Content}",
+                string.IsNullOrWhiteSpace(responseContent) ? "[VUOTO]" : responseContent);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -159,12 +176,38 @@ public class SedeApiService : ISedeApiService
                 return null;
             }
 
-            // CASO 1: Risposta è solo il codice (es: "FID20250112001")
-            var trimmedContent = responseContent.Trim();
-            if (trimmedContent.StartsWith("FID") && trimmedContent.Length >= 15 && trimmedContent.Length <= 25)
+            // Tentativo di parsing del codice fidelity
+            var cdFidelity = ExtractCdFidelityFromResponse(responseContent);
+
+            if (!string.IsNullOrEmpty(cdFidelity))
             {
-                // Probabilmente è solo il codice senza wrapper JSON
-                _logger.LogInformation("SedeApiService: Risposta sembra essere codice diretto: {Code}", trimmedContent);
+                _logger.LogInformation("SedeApiService: Codice fidelity estratto con successo: {Code}", cdFidelity);
+                return cdFidelity;
+            }
+
+            _logger.LogWarning("SedeApiService: Impossibile estrarre codice_fidelity dalla risposta");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "SedeApiService: Errore durante RegisterUserAsync per {Email}", fidelity.Email);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Estrae il codice fidelity dalla risposta, provando diversi metodi
+    /// </summary>
+    private string? ExtractCdFidelityFromResponse(string responseContent)
+    {
+        try
+        {
+            var trimmedContent = responseContent.Trim();
+
+            // CASO 1: Risposta è solo il codice (es: "FID20250113001")
+            if (trimmedContent.StartsWith("FID") && trimmedContent.Length >= 12 && trimmedContent.Length <= 25 && !trimmedContent.Contains("{"))
+            {
+                _logger.LogInformation("SedeApiService: Risposta è codice diretto: {Code}", trimmedContent);
                 return trimmedContent;
             }
 
@@ -176,10 +219,10 @@ public class SedeApiService : ISedeApiService
             }
             catch (JsonException jsonEx)
             {
-                _logger.LogError(jsonEx, "SedeApiService: Risposta non è JSON valido. Content={Content}", responseContent);
+                _logger.LogWarning(jsonEx, "SedeApiService: Risposta non è JSON valido");
 
-                // Ultimo tentativo: cerca pattern "FID" nella stringa
-                var fidMatch = System.Text.RegularExpressions.Regex.Match(responseContent, @"FID\d{12,16}");
+                // CASO 3: Cerca pattern "FID" nella stringa con regex
+                var fidMatch = System.Text.RegularExpressions.Regex.Match(responseContent, @"FID\d{11}");
                 if (fidMatch.Success)
                 {
                     _logger.LogInformation("SedeApiService: Estratto codice con regex: {Code}", fidMatch.Value);
@@ -189,11 +232,21 @@ public class SedeApiService : ISedeApiService
                 return null;
             }
 
-            // Parse response per trovare 'codice_fidelity'
-            // Parse response per trovare 'codice_fidelity'
             var jsonRoot = json.RootElement;
 
-            // CASO 1: Struttura complessa {"response": [{"dataset": [...]}]}
+            // CASO 4: Verifica se c'è un campo "status" con valore "ERROR"
+            if (jsonRoot.TryGetProperty("status", out var statusProp))
+            {
+                var status = statusProp.GetString();
+                if (status == "ERROR")
+                {
+                    var errorMsg = GetStringProperty(jsonRoot, "codice_fidelity") ?? "Errore sconosciuto";
+                    _logger.LogError("SedeApiService: Errore dalla sede: {Error}", errorMsg);
+                    return null;
+                }
+            }
+
+            // CASO 5: Struttura complessa {"response": [{"dataset": [...]}]}
             if (jsonRoot.TryGetProperty("response", out var responseArray))
             {
                 foreach (var respElement in responseArray.EnumerateArray())
@@ -203,47 +256,47 @@ public class SedeApiService : ISedeApiService
                         foreach (var dataElement in datasetArray.EnumerateArray())
                         {
                             var cdFidelity = GetStringProperty(dataElement, "codice_fidelity");
-                            if (!string.IsNullOrEmpty(cdFidelity))
+                            if (!string.IsNullOrEmpty(cdFidelity) && !cdFidelity.StartsWith("ERRORE"))
                             {
-                                _logger.LogInformation("SedeApiService: Codice fidelity trovato in JSON (response/dataset): {Code}", cdFidelity);
+                                _logger.LogInformation("SedeApiService: Codice trovato in JSON (response/dataset): {Code}", cdFidelity);
                                 return cdFidelity;
                             }
                         }
                     }
                 }
             }
-            
-            // CASO 2: Struttura standard SQL {"dataset": [...]}
+
+            // CASO 6: Struttura standard {"dataset": [...]}
             if (jsonRoot.TryGetProperty("dataset", out var rootDatasetArray))
             {
                 foreach (var dataElement in rootDatasetArray.EnumerateArray())
                 {
                     var cdFidelity = GetStringProperty(dataElement, "codice_fidelity");
-                    if (!string.IsNullOrEmpty(cdFidelity))
+                    if (!string.IsNullOrEmpty(cdFidelity) && !cdFidelity.StartsWith("ERRORE"))
                     {
-                        _logger.LogInformation("SedeApiService: Codice fidelity trovato in JSON (root dataset): {Code}", cdFidelity);
+                        _logger.LogInformation("SedeApiService: Codice trovato in JSON (root dataset): {Code}", cdFidelity);
                         return cdFidelity;
                     }
                 }
             }
 
-            // CASO 3: Proprietà diretta {"codice_fidelity": "..."}
+            // CASO 7: Proprietà diretta {"codice_fidelity": "..."}
             if (jsonRoot.TryGetProperty("codice_fidelity", out var codiceProp))
             {
                 var codice = codiceProp.GetString();
-                if (!string.IsNullOrEmpty(codice))
+                if (!string.IsNullOrEmpty(codice) && !codice.StartsWith("ERRORE"))
                 {
-                    _logger.LogInformation("SedeApiService: Codice fidelity trovato diretto: {Code}", codice);
+                    _logger.LogInformation("SedeApiService: Codice trovato diretto: {Code}", codice);
                     return codice;
                 }
             }
 
-            _logger.LogWarning("SedeApiService: codice_fidelity non trovato nella risposta. Response={Response}", responseContent);
+            _logger.LogWarning("SedeApiService: codice_fidelity non trovato in nessuna struttura JSON");
             return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "SedeApiService: Errore durante RegisterUserAsync per {Email}", fidelity.Email);
+            _logger.LogError(ex, "SedeApiService: Errore durante estrazione codice fidelity");
             return null;
         }
     }
@@ -275,7 +328,7 @@ public class SedeApiService : ISedeApiService
                 },
                 Parameters = new[]
                 {
-                    new ParamElement { Name = "Codice_Fidelity", Value = cdFidelity }
+                    new ParamElement { Name = "@Codice_Fidelity", Value = cdFidelity }
                 }
             };
 
