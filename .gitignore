@@ -50,3 +50,6 @@ obj/
 # Environment files
 *.env
 *.env.*
+
+# Solution file
+FidelityCard.sln
