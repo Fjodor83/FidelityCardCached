@@ -7,264 +7,240 @@
 
 <PageTitle>Completa Profilo - Suns</PageTitle>
 
+@if (IsLoading)
+{
+    <div class="spinner-overlay">
+        <div class="elegant-spinner"></div>
+        <div class="loading-text">Stiamo creando la tua Fidelity Card…</div>
+    </div>
+}
 
-    @if (IsLoading)
-    {
-        <div class="spinner-overlay">
-            <div class="elegant-spinner"></div>
-            <div class="loading-text">Elaborazione in corso...</div>
+<!-- Toast Notification -->
+<div class="toast-container-custom">
+    <div class="toast-custom @(IsToastVisible ? "show" : "") @(IsToastError ? "error" : "success")">
+        <div class="toast-icon">
+            <i class="bi @(IsToastError ? "bi-x-circle-fill" : "bi-check-circle-fill")"></i>
         </div>
-    }
+        <div class="toast-content">
+            <h6>@(IsToastError ? "Attenzione" : "Operazione completata")</h6>
+            <p>@ToastMessage</p>
+        </div>
+    </div>
+</div>
 
-    <!-- Toast Notification -->
-    <div class="toast-container-custom">
-        <div class="toast-custom @(IsToastVisible ? "show" : "") @(IsToastError ? "error" : "success")">
-            <div class="toast-icon">
-                <i class="bi @(IsToastError ? "bi-x-circle-fill" : "bi-check-circle-fill")"></i>
-            </div>
-            <div class="toast-content">
-                <h6>@(IsToastError ? "Attenzione" : "Successo")</h6>
-                <p>@ToastMessage</p>
+<div class="min-vh-100 d-flex align-items-center bg-white">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                @if (Success)
+                {
+                    <div class="flip-card-container fade-in-up">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <div class="card-shine"></div>
+                                <img src="img/logo.avif" alt="Logo Suns" style="width:60px;filter:brightness(0) invert(1);" class="mb-2" />
+                                <h4 class="fw-bold mb-1">Benvenuto in Suns</h4>
+
+                                <div class="my-2 bg-white p-2 rounded shadow-sm" style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;">
+                                    <img src="@($"{CustomSettings?.Endpoint}/api/FidelityCard/QRCode/{Fidelity.CdFidelity}")" alt="QR Code Fidelity" class="img-fluid" />
+                                </div>
+
+                                <p class="opacity-75 small mb-0">Fidelity Card Digitale</p>
+                                <div class="mt-2">
+                                    <i class="bi bi-arrow-repeat fs-3 opacity-50"></i>
+                                </div>
+                            </div>
+                            <div class="flip-card-back">
+                                <div class="p-4">
+                                    <h5 class="fw-bold text-primary mb-3">La tua Fidelity Card</h5>
+                                    <div class="bg-light p-3 rounded mb-3 text-center">
+                                        <h2 class="mb-0 fw-bold font-monospace">@Fidelity.CdFidelity</h2>
+                                        <small class="text-muted">Codice cliente</small>
+                                    </div>
+                                    <p class="small text-muted mb-2">Mostra questo codice in cassa per accumulare punti.</p>
+                                    <p class="small text-muted">Puoi salvare questa schermata o fare uno screenshot.</p>
+
+                                    <div class="mt-3 p-3 rounded" style="background-color:#fff3cd;border-left:4px solid #ffc107;">
+                                        <p class="mb-1 fw-semibold" style="color:#856404;font-size:14px;">Offerta di benvenuto</p>
+                                        <p class="mb-0 small" style="color:#856404;">Sconto del <strong>10%</strong> sul primo acquisto online.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4 fade-in-up delay-200">
+                        <h2 class="fw-bold mb-2">Registrazione completata</h2>
+                        <p class="text-muted">La tua Fidelity Card è ora attiva.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="card shadow-lg border-0 fade-in-up" style="border-radius:20px;">
+                        <div class="card-header text-white text-center py-4 registration-header" style="border-top-left-radius:20px;border-top-right-radius:20px;">
+                            <img src="img/logo.avif" alt="Logo Suns" style="width:80px;filter:brightness(0) invert(1);" class="mb-3" />
+                            <h2 class="fw-bold mb-1">Completa il tuo profilo</h2>
+                            <p class="small opacity-75 mb-0">Serviranno solo pochi minuti</p>
+                        </div>
+                        <div class="card-body p-4 p-md-5">
+
+                            <div class="alert alert-light border-0 shadow-sm mb-4">
+                                <div class="d-flex">
+                                    <div class="me-3 text-primary fs-4">
+                                        <i class="bi bi-info-circle-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="alert-heading fw-semibold mb-1">Quasi fatto</h6>
+                                        <p class="mb-0 text-muted small">Inserisci i tuoi dati reali per attivare subito la Fidelity Card.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <EditForm EditContext="@editContext" OnValidSubmit="OnHandleSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                                <DataAnnotationsValidator />
+
+                                <div class="row g-3">
+
+                                    <div class="col-12">
+                                        <h6 class="text-uppercase text-muted border-bottom pb-2 mb-3 small fw-bold">
+                                            <i class="bi bi-person-vcard me-2"></i>Dati anagrafici
+                                        </h6>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Nome</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-person input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Nome" class="form-control form-control-modern" placeholder="Es. Mario" />
+                                        </div>
+                                        <ValidationMessage For="@(() => Fidelity.Nome)" class="text-danger small ms-1" />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Cognome</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-person input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Cognome" class="form-control form-control-modern" placeholder="Es. Rossi" />
+                                        </div>
+                                        <ValidationMessage For="@(() => Fidelity.Cognome)" class="text-danger small ms-1" />
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label class="form-label-modern">Data di nascita</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-calendar-event input-icon"></i>
+                                            <input id="DataNascita" type="text" class="form-control form-control-modern" placeholder="dd/mm/aaaa" value="@(Fidelity.DataNascita?.ToString("dd/MM/yyyy"))" @onchange="HandleDataNascitaChange" />
+                                        </div>
+                                        <ValidationMessage For="@(() => Fidelity.DataNascita)" class="text-danger small ms-1" />
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label class="form-label-modern">Sesso</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-gender-ambiguous input-icon"></i>
+                                            <select class="form-select form-control-modern" @onchange="HandleSessoChange">
+                                                <option value="">Seleziona…</option>
+                                                @foreach (var item in Helpers.SessoType)
+                                                {
+                                                    <option value="@item.Value">@item.Key</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <ValidationMessage For="@(() => Fidelity.Sesso)" class="text-danger small ms-1" />
+                                    </div>
+
+                                    <div class="col-12 mt-4">
+                                        <h6 class="text-uppercase text-muted border-bottom pb-2 mb-3 small fw-bold">
+                                            <i class="bi bi-envelope-at me-2"></i>Contatti
+                                        </h6>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Email</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-envelope input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Email" class="form-control form-control-modern" readonly />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label-modern">Cellulare</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-phone input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Cellulare" class="form-control form-control-modern" placeholder="Es. 3331234567" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-4">
+                                        <h6 class="text-uppercase text-muted border-bottom pb-2 mb-3 small fw-bold">
+                                            <i class="bi bi-geo-alt me-2"></i>Residenza
+                                        </h6>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label-modern">Indirizzo</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-house input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Indirizzo" class="form-control form-control-modern" placeholder="Es. Via Roma 12" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <label class="form-label-modern">Località</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-geo-alt input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Localita" class="form-control form-control-modern" placeholder="Comune" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label-modern">CAP</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-geo input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Cap" class="form-control form-control-modern" placeholder="CAP" maxlength="5" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label class="form-label-modern">Prov</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-map input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Provincia" class="form-control form-control-modern" placeholder="ES. BA" maxlength="2" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label class="form-label-modern">Nazione</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-flag input-icon"></i>
+                                            <InputText @bind-Value="Fidelity.Nazione" class="form-control form-control-modern" placeholder="IT" maxlength="2" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 small text-muted mt-1">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Inserisci i dati come da documento
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mt-5">
+                                    <button type="submit" class="btn btn-registration btn-lg text-white py-3 shadow-sm" disabled="@IsLoading">
+                                        <i class="bi bi-check-lg me-2"></i>Completa la registrazione
+                                    </button>
+                                </div>
+                            </EditForm>
+
+                            <div class="mt-4 text-center">
+                                <small class="text-muted opacity-75">
+                                    <i class="bi bi-shield-lock-fill me-1"></i>I tuoi dati sono protetti e trattati nel rispetto della privacy.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
-
-    <div class="min-vh-100 d-flex align-items-center bg-white">
-        <div class="container py-4">
-            <div class="row justify-content-center">
-                <div class="col-md-10 col-lg-8">
-
-                    @if (Success)
-                    {
-                        <div class="flip-card-container fade-in-up">
-                            <div class="flip-card-inner">
-                                <div class="flip-card-front">
-                                    <div class="card-shine"></div>
-                                    <img src="img/logo.avif" alt="Logo" style="width: 60px; height: auto; filter: brightness(0) invert(1);" class="mb-2" />
-                                    <h4 class="fw-bold mb-1">Benvenuto in Suns</h4>
-
-                                    <div class="my-2 bg-white p-2 rounded shadow-sm" style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
-                                        <img src="@($"{CustomSettings?.Endpoint}/api/FidelityCard/QRCode/{Fidelity.CdFidelity}")" alt="QR Code" class="img-fluid" />
-                                    </div>
-
-                                    <p class="opacity-75 small mb-0">Fidelity Card Digitale</p>
-                                    <div class="mt-2">
-                                        <i class="bi bi-arrow-repeat fs-2 opacity-50 pulse-subtle"></i>
-                                    </div>
-                                </div>
-                                <div class="flip-card-back">
-                                    <div class="p-4">
-                                        <h5 class="fw-bold text-primary mb-3">La tua Card</h5>
-                                        <div class="bg-light p-3 rounded mb-3">
-                                            <h2 class="mb-0 fw-bold font-monospace">@Fidelity.CdFidelity</h2>
-                                            <small class="text-muted">Codice Cliente</small>
-                                        </div>
-                                        <p class="small text-muted mb-2">Mostra questo codice in cassa per accumulare punti.</p>
-                                        <p class="small text-muted">Una copia è stata inviata alla tua email.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4 fade-in-up delay-200">
-                            <h2 class="fw-bold mb-2">Registrazione Completata!</h2>
-                            <p class="text-muted">Grazie per esserti registrato.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="card shadow-lg border-0 fade-in-up" style="border-radius: 20px;">
-                            <div class="card-header text-white text-center py-4 registration-header" style="border-top-left-radius: 20px; border-top-right-radius: 20px;">
-                                <img src="img/logo.avif" alt="Logo" style="width: 80px; height: auto; filter: brightness(0) invert(1);" class="mb-2" />
-                                <h3 class="mb-0 fw-bold">👤 Completa il tuo Profilo</h3>
-                                <p class="mb-0 small opacity-75">Suns - Zero & Company</p>
-                            </div>
-                            <div class="card-body p-4 p-md-5">
-
-                                <div class="alert alert-info border-0 bg-light shadow-sm mb-4">
-                                    <div class="d-flex">
-                                        <div class="me-3 text-primary fs-4">
-                                            <i class="bi bi-info-circle-fill"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="alert-heading fw-bold mb-1">Benvenuto!</h6>
-                                            <p class="mb-0 text-muted small">Per completare la registrazione e ottenere la tua <strong>Fidelity Card</strong>, inserisci i tuoi dati reali.</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <EditForm EditContext="@editContext" OnValidSubmit="OnHandleSubmit" OnInvalidSubmit="HandleInvalidSubmit">
-                                    <DataAnnotationsValidator />
-
-                                    <!-- Toast replaces static error message -->
-
-                                    <div class="row g-3">
-                                        <!-- Anagrafica -->
-                                        <div class="col-12"><h6 class="text-uppercase text-muted border-bottom pb-2 mb-3 mt-2 small fw-bold">Dati Anagrafici</h6></div>
-
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-1">
-                                                <label for="Nome" class="form-label-modern">Nome</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-person input-icon"></i>
-                                                    <InputText id="Nome" @bind-Value="Fidelity.Nome" class="form-control form-control-modern" placeholder="Inserisci il tuo nome" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Nome)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-1">
-                                                <label for="Cognome" class="form-label-modern">Cognome</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-person input-icon"></i>
-                                                    <InputText id="Cognome" @bind-Value="Fidelity.Cognome" class="form-control form-control-modern" placeholder="Inserisci il tuo cognome" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Cognome)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-
-                                        <div class="col-6 col-md-6">
-                                            <div class="form-group mb-1">
-                                                <label for="DataNascita" class="form-label-modern">Data di nascita</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-calendar-event input-icon"></i>
-                                                    <input id="DataNascita" 
-                                                           type="text" 
-                                                           class="@($"form-control form-control-modern {editContext?.FieldCssClass(FieldIdentifier.Create(() => Fidelity.DataNascita))}")" 
-                                                           value="@(Fidelity.DataNascita?.ToString("dd/MM/yyyy"))"
-                                                           @onchange="HandleDataNascitaChange"
-                                                           placeholder="dd/MM/yyyy" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.DataNascita)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-6">
-                                            <div class="form-group mb-1">
-                                                <label for="Sesso" class="form-label-modern">Sesso</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-gender-ambiguous input-icon"></i>
-                                                    <select id="Sesso" class="@($"form-select form-control-modern {editContext?.FieldCssClass(FieldIdentifier.Create(() => Fidelity.Sesso))}")" @onchange="HandleSessoChange" value="@Fidelity.Sesso" style="cursor: pointer;">
-                                                        <option value="" disabled selected>Seleziona...</option>
-                                                        @foreach (var item in Helpers.SessoType)
-                                                        {
-                                                            <option value="@item.Value">@item.Key</option>
-                                                        }
-                                                    </select>
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Sesso)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-
-                                        <!-- Contatti -->
-                                        <div class="col-12"><h6 class="text-uppercase text-muted border-bottom pb-2 mb-3 mt-4 small fw-bold">Contatti</h6></div>
-
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-1">
-                                                <label for="Email" class="form-label-modern">Email</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-envelope input-icon"></i>
-                                                    <InputText id="Email" @bind-Value="Fidelity.Email" class="form-control form-control-modern" readonly />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Email)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-1">
-                                                <label for="Cellulare" class="form-label-modern">Cellulare</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-phone input-icon"></i>
-                                                    <InputText id="Cellulare" @bind-Value="Fidelity.Cellulare" class="form-control form-control-modern" placeholder="Inserisci numero di cellulare" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Cellulare)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-
-                                        <!-- Residenza -->
-                                        <div class="col-12"><h6 class="text-uppercase text-muted border-bottom pb-2 mb-3 mt-4 small fw-bold">Residenza</h6></div>
-
-                                        <div class="col-12">
-                                            <div class="form-group mb-1">
-                                                <label for="Indirizzo" class="form-label-modern">Indirizzo</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-house input-icon"></i>
-                                                    <InputText id="Indirizzo" @bind-Value="Fidelity.Indirizzo" class="form-control form-control-modern" placeholder="Via/Piazza, Civico" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Indirizzo)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-5">
-                                            <div class="form-group mb-1">
-                                                <label for="Localita" class="form-label-modern">Località</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-geo-alt input-icon"></i>
-                                                    <InputText id="Localita" @bind-Value="Fidelity.Localita" class="form-control form-control-modern" placeholder="Comune" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Localita)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group mb-1">
-                                                <label for="Cap" class="form-label-modern">CAP</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-geo input-icon"></i>
-                                                    <InputText id="Cap" @bind-Value="Fidelity.Cap" class="form-control form-control-modern" placeholder="CAP" maxlength="5" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Cap)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group mb-1">
-                                                <label for="Provincia" class="form-label-modern">Prov</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-map input-icon"></i>
-                                                    <InputText id="Provincia" @bind-Value="Fidelity.Provincia" class="form-control form-control-modern" placeholder="XX" style="text-transform: uppercase;" @onblur="() => Fidelity.Provincia = Fidelity.Provincia?.ToUpper()" maxlength="2" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Provincia)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group mb-1">
-                                                <label for="Nazione" class="form-label-modern">Nazione</label>
-                                                <div class="input-wrapper">
-                                                    <i class="bi bi-flag input-icon"></i>
-                                                    <InputText id="Nazione" @bind-Value="Fidelity.Nazione" class="form-control form-control-modern" placeholder="IT" maxlength="2" style="text-transform: uppercase;" @onblur="() => Fidelity.Nazione = Fidelity.Nazione?.ToUpper()" />
-                                                </div>
-                                                <ValidationMessage For="@(() => Fidelity.Nazione)" class="text-danger small ms-1" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-grid mt-5">
-                                        <button type="submit" class="btn btn-registration btn-lg text-white py-3 shadow-sm" disabled="@IsLoading">
-                                            @if (IsLoading)
-                                            {
-                                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                                <span>Registrazione...</span>
-                                            }
-                                            else
-                                            {
-                                                <span><i class="bi bi-check-lg me-2"></i> Conferma e Registrati</span>
-                                            }
-                                        </button>
-                                    </div>
-                                </EditForm>
-
-                                <div class="mt-4 text-center">
-                                    <small class="text-muted opacity-75">
-                                        <i class="bi bi-shield-lock-fill me-1"></i>
-                                        I tuoi dati sono trattati in conformità alla normativa sulla privacy.
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
+</div>
 
 @code {
     [SupplyParameterFromQuery(Name = "token")] public string Token { get; set; } = string.Empty;
@@ -273,16 +249,11 @@
     private bool IsToastError { get; set; }
     private bool IsToastVisible { get; set; }
 
-
-
     Fidelity Fidelity = new();
     private EditContext? editContext;
     public static CustomSettings? CustomSettings { get; set; } = null;
     private bool Success { get; set; } = false;
     private bool IsLoading { get; set; } = false;
-
-
-
 
     protected override void OnInitialized()
     {
@@ -368,20 +339,19 @@
         IsToastVisible = true;
         StateHasChanged();
 
-        await Task.Delay(5000); // 5 seconds auto-dismiss
+        await Task.Delay(5000);
 
         IsToastVisible = false;
         StateHasChanged();
-            }
+    }
 
     private async Task OnHandleSubmit()
     {
-        if (IsLoading) return; // Prevent double submit
+        if (IsLoading) return;
 
         IsLoading = true;
         StateHasChanged();
 
-        // Small delay to show the spinner (UX best practice for perceived performance if API is too fast)
         await Task.Delay(800);
 
         try
@@ -402,15 +372,13 @@
                 }
                 else
                 {
-                    // Fallback se il json e' vuoto ma 200 OK (improbabile)
-                    Success = true; 
+                    Success = true;
                     ShowToast("Registrazione completata!", false);
                 }
             }
             else
             {
                 var errorMsg = await response.Content.ReadAsStringAsync();
-                 // Pulisci il messaggio d'errore se e' troppo tecnico o lungo
                 if (string.IsNullOrEmpty(errorMsg) || errorMsg.Length > 100) errorMsg = "Errore durante la registrazione.";
                 ShowToast(errorMsg, true);
             }
@@ -426,4 +394,3 @@
         }
     }
 }
-

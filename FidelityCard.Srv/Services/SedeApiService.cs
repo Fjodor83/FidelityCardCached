@@ -91,8 +91,8 @@ public class SedeApiService : ISedeApiService
 
     /// <summary>
     /// Registra o aggiorna un utente nella tabella NEFidelity della sede
-    /// IMPORTANTE: L'API arca_dataexchange passa l'intera richiesta alla SP
-    /// Dobbiamo inviare i dati come JSON serializzato nel parametro "JsonData"
+    /// IMPORTANTE: La stored procedure xTSP_API_Put_Fidelity si aspetta un array di parametri
+    /// con struttura: {name, type, value, sequence}
     /// </summary>
     public async Task<string?> RegisterUserAsync(Fidelity fidelity)
     {
@@ -107,28 +107,27 @@ public class SedeApiService : ISedeApiService
                 return null;
             }
 
-            // Crea un oggetto con tutti i dati dell'utente
-            var userData = new
+            // Crea l'array di parametri nel formato richiesto dalla stored procedure
+            var parameters = new List<ParamElement>
             {
-                Email = fidelity.Email ?? "",
-                Nome = fidelity.Nome ?? "",
-                Cognome = fidelity.Cognome ?? "",
-                Store = fidelity.Store ?? "NE001",
-                Tipo = "D",
-                Sesso = fidelity.Sesso ?? "",
-                DataNascita = fidelity.DataNascita?.ToString("ddMMyyyy") ?? "",
-                Indirizzo = fidelity.Indirizzo ?? "",
-                Localita = fidelity.Localita ?? "",
-                Cap = fidelity.Cap ?? "",
-                Provincia = fidelity.Provincia ?? "",
-                Nazione = fidelity.Nazione ?? "",
-                Cellulare = fidelity.Cellulare ?? ""
+                new ParamElement { Name = "store", Type = "string", Value = fidelity.Store ?? "NE001", Sequence = "1" },
+                new ParamElement { Name = "tipo", Type = "string", Value = "D", Sequence = "2" },
+                new ParamElement { Name = "nome", Type = "string", Value = fidelity.Nome ?? "", Sequence = "3" },
+                new ParamElement { Name = "cognome", Type = "string", Value = fidelity.Cognome ?? "", Sequence = "4" },
+                new ParamElement { Name = "sesso", Type = "string", Value = fidelity.Sesso ?? "", Sequence = "5" },
+                new ParamElement { Name = "data_nascita", Type = "string", Value = fidelity.DataNascita?.ToString("yyyyMMdd") ?? "", Sequence = "6" },
+                new ParamElement { Name = "codice_fiscale", Type = "string", Value = "", Sequence = "7" },
+                new ParamElement { Name = "indirizzo", Type = "string", Value = fidelity.Indirizzo ?? "", Sequence = "8" },
+                new ParamElement { Name = "localita", Type = "string", Value = fidelity.Localita ?? "", Sequence = "9" },
+                new ParamElement { Name = "cap", Type = "string", Value = fidelity.Cap ?? "", Sequence = "10" },
+                new ParamElement { Name = "provincia", Type = "string", Value = fidelity.Provincia ?? "", Sequence = "11" },
+                new ParamElement { Name = "nazione", Type = "string", Value = fidelity.Nazione ?? "", Sequence = "12" },
+                new ParamElement { Name = "cellulare", Type = "string", Value = fidelity.Cellulare ?? "", Sequence = "13" },
+                new ParamElement { Name = "email", Type = "string", Value = fidelity.Email ?? "", Sequence = "14" },
+                new ParamElement { Name = "sconto", Type = "string", Value = "10", Sequence = "15" }
             };
 
-            // Serializza l'oggetto in JSON
-            var userDataJson = JsonSerializer.Serialize(userData);
-
-            // Crea la request con il JSON come parametro singolo
+            // Crea la request con i parametri nel formato corretto
             var request = new RequestSede
             {
                 Request = new Request
@@ -138,14 +137,11 @@ public class SedeApiService : ISedeApiService
                     CalledFrom = "APP FIDELITY",
                     CalledOperator = ""
                 },
-                Parameters = new[]
-                {
-                new ParamElement { Name = "JsonData", Value = userDataJson }
-            }
+                Parameters = parameters.ToArray()
             };
 
             _logger.LogInformation("SedeApiService: Registrazione utente {Email} store {Store}, DataNascita={DataNascita}",
-                fidelity.Email, fidelity.Store, fidelity.DataNascita?.ToString("ddMMyyyy") ?? "NULL");
+                fidelity.Email, fidelity.Store, fidelity.DataNascita?.ToString("yyyyMMdd") ?? "NULL");
 
             // Log della request completa per debug
             var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions { WriteIndented = true });

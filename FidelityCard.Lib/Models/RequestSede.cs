@@ -31,7 +31,11 @@ namespace FidelityCard.Lib.Models
     {
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
+        [JsonPropertyName("type")]
+        public string? Type { get; set; } = null;
         [JsonPropertyName("value")]
         public string? Value { get; set; } = null;
+        [JsonPropertyName("sequence")]
+        public string? Sequence { get; set; } = null;
     }
 }
