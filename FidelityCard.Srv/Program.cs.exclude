@@ -4,25 +4,18 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Supporto CORS - Configurazione dinamica per Azure e Development
-var frontendUrl = builder.Configuration.GetValue<string>("FRONTEND_URL") 
-    ?? builder.Configuration.GetValue<string>("ClientHost") 
-    ?? "localhost:7065";
-
+// Supporto CORS
+var host = builder.Configuration.GetSection("ClientHost").Get<string>() ?? "localhost:7065";
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        // Supporta sia URL completi (Azure) che host semplici (localhost)
-        var origins = frontendUrl.StartsWith("http") 
-            ? new[] { frontendUrl }
-            : new[] { $"https://{frontendUrl}", $"http://{frontendUrl}" };
-            
-        policy.WithOrigins(origins)
+        policy.WithOrigins($"https://{host}") // URL del client Blazor WebAssembly
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
+
 
 var settings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>() ?? new();
 builder.Services.AddSingleton(Options.Create(settings));

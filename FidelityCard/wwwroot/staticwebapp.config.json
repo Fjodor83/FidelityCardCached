@@ -1,0 +1,22 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/css/*", "/js/*", "/*.{png,jpg,jpeg,gif,svg,ico,woff,woff2,ttf,eot}", "/_framework/*"]
+  },
+  "mimeTypes": {
+    ".json": "application/json",
+    ".dll": "application/octet-stream",
+    ".wasm": "application/wasm",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2"
+  },
+  "globalHeaders": {
+    "cache-control": "public, max-age=31536000, immutable"
+  },
+  "routes": [
+    {
+      "route": "/*",
+      "allowedRoles": ["anonymous"]
+    }
+  ]
+}

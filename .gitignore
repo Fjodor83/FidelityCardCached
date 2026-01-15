@@ -10,46 +10,18 @@ obj/
 
 # Ignored Folders
 **/Token/
--e 
+
 # Environment files
 *.env
 *.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
+
+# Local development settings (contains credentials)
+**/appsettings.Development.json
+
+# Azure publish profiles
+*.PublishSettings
+*.pubxml
+*.pubxml.user
 
 # Solution file
 FidelityCard.sln
